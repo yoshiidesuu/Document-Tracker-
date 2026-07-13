@@ -31,7 +31,7 @@ class GoogleController extends Controller
             ]);
         }
 
-        if (!$googleUser->email) {
+        if (! $googleUser->email) {
             return redirect()->route('login.form')->withErrors([
                 'credential' => 'Google account must have a valid email address.',
             ]);
@@ -40,7 +40,7 @@ class GoogleController extends Controller
         $emailHash = $encryption->hashEmail($googleUser->email);
         $user = User::where('email_hash', $emailHash)->first();
 
-        if (!$user) {
+        if (! $user) {
             $nameParts = explode(' ', $googleUser->name, 2);
             $firstName = $nameParts[0] ?: $googleUser->name;
             $lastName = $nameParts[1] ?? '';
@@ -74,7 +74,7 @@ class GoogleController extends Controller
                 ]);
             }
 
-            if ($googleUser->avatar && !$user->profile_picture) {
+            if ($googleUser->avatar && ! $user->profile_picture) {
                 $user->profile_picture = $googleUser->avatar;
             }
         }
@@ -89,7 +89,7 @@ class GoogleController extends Controller
         ])->save();
 
         session([
-            'security.fingerprint' => sha1($request->ip() . '|' . $request->userAgent()),
+            'security.fingerprint' => sha1($request->ip().'|'.$request->userAgent()),
             'security.logged_in_at' => now()->timestamp,
         ]);
 

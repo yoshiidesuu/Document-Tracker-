@@ -12,6 +12,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('tokens/create', function (Request $request) {
         $request->validate(['name' => 'required|string|max:255']);
         $token = $request->user()->createToken($request->input('name'));
+
         return response()->json([
             'token' => $token->plainTextToken,
             'message' => 'Token created successfully.',
@@ -20,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::delete('tokens/{id}', function (Request $request, $id) {
         $request->user()->tokens()->where('id', $id)->delete();
+
         return response()->json(['message' => 'Token revoked.']);
     })->name('api.tokens.revoke');
 

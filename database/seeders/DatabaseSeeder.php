@@ -58,18 +58,18 @@ class DatabaseSeeder extends Seeder
                 'bday' => '1996-01-01',
             ]
         );
-        if (!$admin->roles()->where('role_id', $adminRole->id)->exists()) {
+        if (! $admin->roles()->where('role_id', $adminRole->id)->exists()) {
             $admin->roles()->attach($adminRole);
         }
 
         $sysAdmin = User::where('email', 'admin@gmail.com')->first();
-        if ($sysAdmin && !$sysAdmin->roles()->where('role_id', $adminRole->id)->exists()) {
+        if ($sysAdmin && ! $sysAdmin->roles()->where('role_id', $adminRole->id)->exists()) {
             $sysAdmin->roles()->attach($adminRole);
         }
 
         $staffRole = Role::where('slug', 'staff')->first();
 
-        if (!User::where('email', 'test@example.com')->exists()) {
+        if (! User::where('email', 'test@example.com')->exists()) {
             $testUser = User::factory()->create([
                 'firstname' => 'Test',
                 'lastname' => 'User',

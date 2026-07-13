@@ -31,20 +31,24 @@ class UserController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('firstname', 'like', "%{$search}%")
-                  ->orWhere('lastname', 'like', "%{$search}%")
-                  ->orWhere('name', 'like', "%{$search}%")
-                  ->orWhere('id_number', 'like', "%{$search}%");
+                    ->orWhere('lastname', 'like', "%{$search}%")
+                    ->orWhere('name', 'like', "%{$search}%")
+                    ->orWhere('id_number', 'like', "%{$search}%");
             });
         }
 
         if ($status = $request->input('status')) {
-            if ($status === 'banned') $query->where('banned', true);
-            elseif ($status === 'locked') $query->where('locked', true);
-            elseif ($status === 'active') $query->where('status', 'active')->where('banned', false)->where('locked', false);
+            if ($status === 'banned') {
+                $query->where('banned', true);
+            } elseif ($status === 'locked') {
+                $query->where('locked', true);
+            } elseif ($status === 'active') {
+                $query->where('status', 'active')->where('banned', false)->where('locked', false);
+            }
         }
 
         if ($roleSlug = $request->input('role')) {
-            $query->whereHas('roles', fn($q) => $q->where('slug', $roleSlug));
+            $query->whereHas('roles', fn ($q) => $q->where('slug', $roleSlug));
         }
 
         $sortField = $request->input('sort', 'created_at');
@@ -115,6 +119,7 @@ class UserController extends Controller
         abort_unless(auth()->user()->hasPermission('users.view'), 403);
 
         $user = User::with('roles', 'department', 'office')->findOrFail($id);
+
         return view('system.users.view', compact('user'));
     }
 
@@ -201,6 +206,7 @@ class UserController extends Controller
                 ->withErrors(['error' => 'You cannot ban your own account.']);
         }
         $user->ban();
+
         return redirect()->route('system.users.view', $id)
             ->with('success', 'User banned successfully.');
     }
@@ -211,6 +217,7 @@ class UserController extends Controller
 
         $user = User::findOrFail($id);
         $user->unban();
+
         return redirect()->route('system.users.view', $id)
             ->with('success', 'User unbanned successfully.');
     }
@@ -225,6 +232,7 @@ class UserController extends Controller
                 ->withErrors(['error' => 'You cannot lock your own account.']);
         }
         $user->lock();
+
         return redirect()->route('system.users.view', $id)
             ->with('success', 'User locked successfully.');
     }
@@ -235,6 +243,7 @@ class UserController extends Controller
 
         $user = User::findOrFail($id);
         $user->unlock();
+
         return redirect()->route('system.users.view', $id)
             ->with('success', 'User unlocked successfully.');
     }
@@ -280,19 +289,25 @@ class UserController extends Controller
 
         foreach ($users as $user) {
             if ($action === 'delete') {
-                if ($user->id === auth()->id()) continue;
+                if ($user->id === auth()->id()) {
+                    continue;
+                }
                 $this->userActivity->log('user_deleted', "User deleted: {$user->email} (ID: {$user->id})", userId: $user->id, oldData: $user->only(['firstname', 'lastname', 'email', 'id_number']));
                 $user->delete();
                 $count++;
             } elseif ($action === 'ban') {
-                if ($user->id === auth()->id()) continue;
+                if ($user->id === auth()->id()) {
+                    continue;
+                }
                 $user->ban();
                 $count++;
             } elseif ($action === 'unban') {
                 $user->unban();
                 $count++;
             } elseif ($action === 'lock') {
-                if ($user->id === auth()->id()) continue;
+                if ($user->id === auth()->id()) {
+                    continue;
+                }
                 $user->lock();
                 $count++;
             } elseif ($action === 'unlock') {

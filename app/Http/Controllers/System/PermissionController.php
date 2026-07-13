@@ -56,11 +56,11 @@ class PermissionController extends Controller
         $perms = $role->permissions ?? [];
 
         if ($request->enabled) {
-            if (!in_array($request->permission, $perms)) {
+            if (! in_array($request->permission, $perms)) {
                 $perms[] = $request->permission;
             }
         } else {
-            $perms = array_values(array_filter($perms, fn($p) => $p !== $request->permission));
+            $perms = array_values(array_filter($perms, fn ($p) => $p !== $request->permission));
         }
 
         $role->update(['permissions' => $perms]);

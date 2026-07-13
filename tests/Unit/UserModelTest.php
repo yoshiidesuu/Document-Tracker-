@@ -3,13 +3,9 @@
 namespace Tests\Unit;
 
 use App\Models\Department;
-use App\Models\Document;
-use App\Models\DocumentTrack;
-use App\Models\DocumentType;
 use App\Models\Office;
 use App\Models\Role;
 use App\Models\User;
-use App\Models\ArtaSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -17,7 +13,7 @@ class UserModelTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function testUserFullNameAccessorWorks(): void
+    public function test_user_full_name_accessor_works(): void
     {
         $user = User::factory()->create([
             'firstname' => 'John',
@@ -28,7 +24,7 @@ class UserModelTest extends TestCase
         $this->assertEquals('John Middle Doe', $user->full_name);
     }
 
-    public function testUserFullNameWithoutMiddlename(): void
+    public function test_user_full_name_without_middlename(): void
     {
         $user = User::factory()->create([
             'firstname' => 'Jane',
@@ -38,7 +34,7 @@ class UserModelTest extends TestCase
         $this->assertEquals('Jane Smith', $user->full_name);
     }
 
-    public function testUserInitialsAccessorWorks(): void
+    public function test_user_initials_accessor_works(): void
     {
         $user = User::factory()->create([
             'firstname' => 'John',
@@ -48,7 +44,7 @@ class UserModelTest extends TestCase
         $this->assertEquals('JD', $user->initials);
     }
 
-    public function testUserInitialsWithSingleName(): void
+    public function test_user_initials_with_single_name(): void
     {
         $user = User::factory()->create([
             'name' => 'Single',
@@ -57,14 +53,14 @@ class UserModelTest extends TestCase
         $this->assertEquals('SI', $user->initials);
     }
 
-    public function testUserProfilePictureUrlReturnsNullWhenEmpty(): void
+    public function test_user_profile_picture_url_returns_null_when_empty(): void
     {
         $user = User::factory()->create(['profile_picture' => null]);
 
         $this->assertNull($user->profile_picture_url);
     }
 
-    public function testUserProfilePictureUrlReturnsRouteWhenLocal(): void
+    public function test_user_profile_picture_url_returns_route_when_local(): void
     {
         $user = User::factory()->create(['profile_picture' => 'profile.jpg']);
 
@@ -72,14 +68,14 @@ class UserModelTest extends TestCase
         $this->assertEquals($expectedUrl, $user->profile_picture_url);
     }
 
-    public function testUserProfilePictureUrlReturnsFullUrlWhenHttp(): void
+    public function test_user_profile_picture_url_returns_full_url_when_http(): void
     {
         $user = User::factory()->create(['profile_picture' => 'https://example.com/image.jpg']);
 
         $this->assertEquals('https://example.com/image.jpg', $user->profile_picture_url);
     }
 
-    public function testUserIsBannedMethod(): void
+    public function test_user_is_banned_method(): void
     {
         $bannedUser = User::factory()->create(['banned' => true]);
         $activeUser = User::factory()->create(['banned' => false]);
@@ -88,7 +84,7 @@ class UserModelTest extends TestCase
         $this->assertFalse($activeUser->isBanned());
     }
 
-    public function testUserIsActiveMethod(): void
+    public function test_user_is_active_method(): void
     {
         $activeUser = User::factory()->create([
             'status' => 'active',
@@ -106,7 +102,7 @@ class UserModelTest extends TestCase
         $this->assertFalse($lockedUser->isActive());
     }
 
-    public function testUserRolesRelationship(): void
+    public function test_user_roles_relationship(): void
     {
         $user = User::factory()->create();
         $role = Role::factory()->create(['name' => 'Test Role', 'slug' => 'test-role']);
@@ -117,7 +113,7 @@ class UserModelTest extends TestCase
         $this->assertEquals('test-role', $user->roles->first()->slug);
     }
 
-    public function testUserDepartmentRelationship(): void
+    public function test_user_department_relationship(): void
     {
         $user = User::factory()->create();
         $department = Department::factory()->create();
@@ -128,7 +124,7 @@ class UserModelTest extends TestCase
         $this->assertEquals($department->id, $user->department->id);
     }
 
-    public function testUserOfficeRelationship(): void
+    public function test_user_office_relationship(): void
     {
         $user = User::factory()->create();
         $office = Office::factory()->create();
@@ -139,7 +135,7 @@ class UserModelTest extends TestCase
         $this->assertEquals($office->id, $user->office->id);
     }
 
-    public function testUserHasRoleMethod(): void
+    public function test_user_has_role_method(): void
     {
         $user = User::factory()->create();
         $role = Role::factory()->create(['slug' => 'admin']);
@@ -150,7 +146,7 @@ class UserModelTest extends TestCase
         $this->assertTrue($user->hasRole(['admin', 'staff']));
     }
 
-    public function testUserHasPermissionMethod(): void
+    public function test_user_has_permission_method(): void
     {
         $user = User::factory()->create();
         $role = Role::factory()->create();
@@ -163,7 +159,7 @@ class UserModelTest extends TestCase
         $this->assertFalse($user->hasPermission('documents.delete'));
     }
 
-    public function testUserAdminHasAllPermissions(): void
+    public function test_user_admin_has_all_permissions(): void
     {
         $user = User::factory()->create();
         $adminRole = Role::factory()->create(['slug' => 'admin']);

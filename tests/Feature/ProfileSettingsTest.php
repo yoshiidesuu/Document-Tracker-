@@ -14,17 +14,20 @@ class ProfileSettingsTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Role $role;
+
     protected Department $department;
+
     protected Office $office;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->role = Role::factory()->create([
-            'name' => 'Staff', 
+            'name' => 'Staff',
             'slug' => 'staff',
-            'permissions' => ['settings.access']
+            'permissions' => ['settings.access'],
         ]);
 
         $this->department = Department::factory()->create();

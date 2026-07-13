@@ -13,11 +13,11 @@ class BlockIpsMiddleware
         $blocked = array_filter(config('security.network.blocked_ips', []));
         $whitelist = array_filter(config('security.network.whitelist_ips', []));
 
-        if (!empty($blocked) && in_array($request->ip(), $blocked)) {
+        if (! empty($blocked) && in_array($request->ip(), $blocked)) {
             abort(403, 'Access denied.');
         }
 
-        if (!empty($whitelist) && !in_array($request->ip(), $whitelist)) {
+        if (! empty($whitelist) && ! in_array($request->ip(), $whitelist)) {
             abort(403, 'Access denied.');
         }
 

@@ -23,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             $limit = config('security.rate_limiting.api.max_attempts', 120);
             $decay = config('security.rate_limiting.api.decay_minutes', 1);
+
             return Limit::perMinute($limit)->by($request->user()?->id ?: $request->ip());
         });
 

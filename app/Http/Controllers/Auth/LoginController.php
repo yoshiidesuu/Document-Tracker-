@@ -7,7 +7,7 @@ use App\Http\Requests\LoginRequest;
 use App\Models\User;
 use App\Services\SecurityAuditService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
@@ -17,7 +17,7 @@ class LoginController extends Controller
         private readonly SecurityAuditService $audit
     ) {}
 
-    public function __invoke(LoginRequest $request): JsonResponse|\Illuminate\Http\RedirectResponse
+    public function __invoke(LoginRequest $request): JsonResponse|RedirectResponse
     {
         $credential = $request->input('credential');
         $field = filter_var($credential, FILTER_VALIDATE_EMAIL) ? 'email' : 'id_number';
@@ -38,7 +38,7 @@ class LoginController extends Controller
             ]);
         }
 
-        if (!Auth::attempt([
+        if (! Auth::attempt([
             $field => $credential,
             'password' => $request->input('password'),
         ], $request->boolean('remember'))) {
@@ -63,7 +63,7 @@ class LoginController extends Controller
         $user->clearLoginAttempts();
 
         session([
-            'security.fingerprint' => sha1($request->ip() . '|' . $request->userAgent()),
+            'security.fingerprint' => sha1($request->ip().'|'.$request->userAgent()),
             'security.logged_in_at' => now()->timestamp,
         ]);
 
@@ -75,6 +75,7 @@ class LoginController extends Controller
             if ($user->isPasswordExpired()) {
                 $response['warning'] = 'Your password has expired. Please change it.';
             }
+
             return response()->json($response);
         }
 

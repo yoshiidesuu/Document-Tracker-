@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
-use App\Services\UserActivityService;
 use App\Services\EncryptionService;
+use App\Services\UserActivityService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
 
 class RegisterController extends Controller
 {
@@ -77,7 +76,7 @@ class RegisterController extends Controller
 
     private function getGeolocation(?string $ip): ?array
     {
-        if (!$ip || $ip === '127.0.0.1' || $ip === '::1') {
+        if (! $ip || $ip === '127.0.0.1' || $ip === '::1') {
             return null;
         }
 

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\ArtaSetting;
 use App\Models\Document;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -17,11 +18,11 @@ class DocumentFactory extends Factory
             'document_type' => fake()->randomElement(['Memorandum', 'Letter', 'Report', 'Circular', 'Order']),
             'creator_id' => User::factory(),
             'processing_hours' => fake()->numberBetween(1, 48),
-            'qr_value' => 'QR-' . strtoupper(fake()->unique()->bothify('??####')),
-            'barcode_value' => 'BAR-' . strtoupper(fake()->unique()->bothify('??####')),
+            'qr_value' => 'QR-'.strtoupper(fake()->unique()->bothify('??####')),
+            'barcode_value' => 'BAR-'.strtoupper(fake()->unique()->bothify('??####')),
             'is_private' => fake()->boolean(10),
             'access_key' => null,
-            'arta_setting_id' => \App\Models\ArtaSetting::factory(),
+            'arta_setting_id' => ArtaSetting::factory(),
             'arta_category' => fake()->randomElement(['simple', 'complex', 'highly_technical']),
             'notes' => fake()->optional()->paragraph(),
             'status' => fake()->randomElement(['pending', 'received', 'in_progress', 'finished', 'terminated', 'reopened']),

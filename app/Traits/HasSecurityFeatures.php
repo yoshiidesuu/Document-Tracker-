@@ -5,6 +5,7 @@ namespace App\Traits;
 use App\Models\FailedLoginAttempt;
 use App\Models\PasswordHistory;
 use App\Models\SecurityLog;
+use App\Models\UserActivity;
 use App\Rules\StrongPassword;
 use App\Services\EncryptionService;
 use App\Services\SecurityAuditService;
@@ -15,7 +16,7 @@ trait HasSecurityFeatures
     public static function bootHasSecurityFeatures(): void
     {
         static::creating(function ($model) {
-            if (!$model->password_changed_at && $model->password) {
+            if (! $model->password_changed_at && $model->password) {
                 $model->password_changed_at = now();
             }
             if (config('security.encryption.encrypt_pii') && $model->isEncryptable('email') && $model->email) {
@@ -59,23 +60,36 @@ trait HasSecurityFeatures
     public function isPasswordExpired(): bool
     {
         $maxAgeDays = config('security.password.max_age_days', 90);
-        if ($maxAgeDays <= 0) return false;
-        if (!$this->password_changed_at) return true;
+        if ($maxAgeDays <= 0) {
+            return false;
+        }
+        if (! $this->password_changed_at) {
+            return true;
+        }
+
         return $this->password_changed_at->addDays($maxAgeDays)->isPast();
     }
 
     public function passwordExpiresInDays(): ?int
     {
         $maxAgeDays = config('security.password.max_age_days', 90);
-        if (!$this->password_changed_at || $maxAgeDays <= 0) return null;
+        if (! $this->password_changed_at || $maxAgeDays <= 0) {
+            return null;
+        }
         $expiresAt = $this->password_changed_at->addDays($maxAgeDays);
-        if ($expiresAt->isPast()) return 0;
+        if ($expiresAt->isPast()) {
+            return 0;
+        }
+
         return now()->diffInDays($expiresAt, false);
     }
 
     public function isAccountLocked(): bool
     {
-        if ($this->banned) return true;
+        if ($this->banned) {
+            return true;
+        }
+
         return (bool) $this->locked;
     }
 
@@ -86,6 +100,7 @@ trait HasSecurityFeatures
         $attempts = FailedLoginAttempt::where('email', $this->email)
             ->where('created_at', '>=', now()->subMinutes($lockoutMinutes))
             ->count();
+
         return $attempts >= $maxAttempts;
     }
 
@@ -147,11 +162,13 @@ trait HasSecurityFeatures
                 foreach ($recentHashes as $oldHash) {
                     if (Hash::check($value, $oldHash)) {
                         $fail('You cannot reuse a recent password.');
+
                         return;
                     }
                 }
             };
         }
+
         return $rules;
     }
 
@@ -162,7 +179,7 @@ trait HasSecurityFeatures
 
     public function userActivities()
     {
-        return $this->hasMany(\App\Models\UserActivity::class);
+        return $this->hasMany(UserActivity::class);
     }
 
     public function failedLoginAttempts()

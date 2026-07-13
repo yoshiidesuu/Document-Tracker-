@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LoginRequest extends FormRequest
@@ -28,10 +29,11 @@ class LoginRequest extends FormRequest
         ];
     }
 
-    public function findUser(): ?\App\Models\User
+    public function findUser(): ?User
     {
         $value = $this->input('credential');
-        return \App\Models\User::where('email', $value)
+
+        return User::where('email', $value)
             ->orWhere('id_number', $value)
             ->first();
     }

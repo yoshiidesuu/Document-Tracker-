@@ -7,21 +7,28 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\PasswordChangeController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\System\ActivityLogController;
+use App\Http\Controllers\System\ArtaSettingController;
 use App\Http\Controllers\System\DepartmentController;
 use App\Http\Controllers\System\DocumentController;
 use App\Http\Controllers\System\DocumentTypeController;
-use App\Http\Controllers\System\ArtaSettingController;
+use App\Http\Controllers\System\EmailSettingController;
 use App\Http\Controllers\System\OfficeController;
 use App\Http\Controllers\System\PermissionController;
 use App\Http\Controllers\System\ProfileController;
 use App\Http\Controllers\System\RoleController;
+use App\Http\Controllers\System\SecurityLogController;
+use App\Http\Controllers\System\SettingController;
+use App\Http\Controllers\System\StatisticsController;
 use App\Http\Controllers\System\UserController;
 use App\Http\Controllers\SystemController;
-use App\Http\Controllers\System\SettingController;
+use App\Models\SecurityLog;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,13 +40,14 @@ Route::get('file/settings/favicon', [FileController::class, 'favicon'])->name('f
 Route::get('file/settings/document-logo-right', [FileController::class, 'documentRightLogo'])->name('file.document-logo-right')->middleware('auth');
 Route::get('file/profile/{filename}', [FileController::class, 'profile'])->name('file.profile')->middleware('auth');
 
-Route::get('check-credential', function (Illuminate\Http\Request $request) {
+Route::get('check-credential', function (Request $request) {
     $q = $request->input('q');
-    if (!$q || strlen($q) < 2) {
+    if (! $q || strlen($q) < 2) {
         return response()->json(['exists' => false]);
     }
     $field = filter_var($q, FILTER_VALIDATE_EMAIL) ? 'email' : 'id_number';
-    $user = \App\Models\User::where($field, $q)->first(['id', 'firstname', 'lastname', 'email', 'id_number', 'profile_picture']);
+    $user = User::where($field, $q)->first(['id', 'firstname', 'lastname', 'email', 'id_number', 'profile_picture']);
+
     return response()->json([
         'exists' => (bool) $user,
         'field' => $user ? $field : null,
@@ -165,13 +173,13 @@ Route::middleware('auth')->group(function () {
             Route::delete('{office}', [OfficeController::class, 'destroy'])->name('destroy')->whereNumber('office');
         });
 
-        Route::get('messages', [\App\Http\Controllers\ChatController::class, 'index'])->name('messages');
+        Route::get('messages', [ChatController::class, 'index'])->name('messages');
 
-        Route::get('email-settings', [\App\Http\Controllers\System\EmailSettingController::class, 'index'])->name('email-settings');
-        Route::post('email-settings', [\App\Http\Controllers\System\EmailSettingController::class, 'update'])->name('email-settings.update');
-        Route::post('email-settings/test', [\App\Http\Controllers\System\EmailSettingController::class, 'test'])->name('email-settings.test');
+        Route::get('email-settings', [EmailSettingController::class, 'index'])->name('email-settings');
+        Route::post('email-settings', [EmailSettingController::class, 'update'])->name('email-settings.update');
+        Route::post('email-settings/test', [EmailSettingController::class, 'test'])->name('email-settings.test');
 
-        Route::get('statistics', [\App\Http\Controllers\System\StatisticsController::class, 'index'])->name('statistics');
+        Route::get('statistics', [StatisticsController::class, 'index'])->name('statistics');
 
         Route::prefix('documents')->name('documents.')->group(function () {
             Route::get('/', [DocumentController::class, 'index'])->name('index');
@@ -219,24 +227,24 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::prefix('activity-logs')->name('activity-logs.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\System\ActivityLogController::class, 'index'])->name('index');
+            Route::get('/', [ActivityLogController::class, 'index'])->name('index');
         });
 
         Route::prefix('security-logs')->name('security-logs.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\System\SecurityLogController::class, 'index'])->name('index');
+            Route::get('/', [SecurityLogController::class, 'index'])->name('index');
         });
     });
 });
 
 Route::get('user/verify-session', function (Request $request) {
-    if (!auth()->check()) {
+    if (! auth()->check()) {
         return response()->json(['valid' => false]);
     }
-    $fingerprint = sha1($request->ip() . '|' . $request->userAgent());
+    $fingerprint = sha1($request->ip().'|'.$request->userAgent());
     $stored = session('security.fingerprint');
     $valid = $stored && hash_equals($stored, $fingerprint);
-    if (!$valid && $stored) {
-        \App\Models\SecurityLog::create([
+    if (! $valid && $stored) {
+        SecurityLog::create([
             'user_id' => auth()->id(),
             'event' => 'session_fingerprint_mismatch',
             'description' => 'Session fingerprint mismatch during verification',
@@ -245,5 +253,6 @@ Route::get('user/verify-session', function (Request $request) {
             'severity' => 'warning',
         ]);
     }
+
     return response()->json(['valid' => $valid]);
 })->middleware('auth');

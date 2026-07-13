@@ -13,8 +13,8 @@ class ArtaSettingFactory extends Factory
     {
         $category = fake()->randomElement(['simple', 'complex', 'highly_technical']);
         $days = fake()->numberBetween(1, 20);
-        $title = fake()->unique()->words(2, true) . ' ' . ucfirst($category) . ' Setting';
-        
+        $title = fake()->unique()->words(2, true).' '.ucfirst($category).' Setting';
+
         return [
             'category' => $category,
             'title' => $title,

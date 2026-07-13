@@ -2,10 +2,7 @@
 
 namespace App\Providers;
 
-use App\Http\Middleware\ForceHttpsMiddleware;
-use App\Http\Middleware\InputSanitizeMiddleware;
-use App\Http\Middleware\SecurityHeadersMiddleware;
-use App\Http\Middleware\SecurityMonitorMiddleware;
+use App\Console\Commands\SecurityAuditCleanup;
 use App\Services\EncryptionService;
 use App\Services\SecurityAuditService;
 use Illuminate\Support\ServiceProvider;
@@ -30,7 +27,7 @@ class SecurityServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->commands([
-                \App\Console\Commands\SecurityAuditCleanup::class,
+                SecurityAuditCleanup::class,
             ]);
         }
     }
@@ -51,7 +48,9 @@ class SecurityServiceProvider extends ServiceProvider
 
     private function configureCors(): void
     {
-        if (!config()->has('cors')) return;
+        if (! config()->has('cors')) {
+            return;
+        }
         config([
             'cors.paths' => ['api/*'],
             'cors.allowed_methods' => config('security.cors.allowed_methods'),

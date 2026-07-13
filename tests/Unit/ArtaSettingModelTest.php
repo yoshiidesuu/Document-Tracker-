@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\ArtaSetting;
+use App\Models\Document;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,8 +15,8 @@ class ArtaSettingModelTest extends TestCase
     public function testarta_setting_documents_relationship(): void
     {
         $artaSetting = ArtaSetting::factory()->create(['category' => 'simple', 'days' => 3]);
-        $doc1 = \App\Models\Document::factory()->create(['arta_setting_id' => $artaSetting->id]);
-        $doc2 = \App\Models\Document::factory()->create(['arta_setting_id' => $artaSetting->id]);
+        $doc1 = Document::factory()->create(['arta_setting_id' => $artaSetting->id]);
+        $doc2 = Document::factory()->create(['arta_setting_id' => $artaSetting->id]);
 
         $this->assertCount(2, $artaSetting->documents);
     }
@@ -23,7 +24,7 @@ class ArtaSettingModelTest extends TestCase
     // @test
     public function testarta_setting_fillable_attributes(): void
     {
-        $arta = new ArtaSetting();
+        $arta = new ArtaSetting;
         $fillable = $arta->getFillable();
 
         $this->assertContains('category', $fillable);
@@ -35,7 +36,7 @@ class ArtaSettingModelTest extends TestCase
     // @test
     public function testarta_setting_casts(): void
     {
-        $arta = new ArtaSetting();
+        $arta = new ArtaSetting;
         $casts = $arta->getCasts();
 
         $this->assertEquals('integer', $casts['days']);

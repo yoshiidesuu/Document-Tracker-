@@ -47,7 +47,7 @@ class SecurityAuditService
 
     public function logLoginFailed(string $email, ?string $reason = null): SecurityLog
     {
-        return $this->log('login_failed', "Failed login attempt for {$email}" . ($reason ? ": {$reason}" : ''), ['email' => $email], severity: 'warning');
+        return $this->log('login_failed', "Failed login attempt for {$email}".($reason ? ": {$reason}" : ''), ['email' => $email], severity: 'warning');
     }
 
     public function logPasswordChange(int $userId): SecurityLog
@@ -77,14 +77,14 @@ class SecurityAuditService
 
     public function logBreachNotification(string $type, string $description): SecurityLog
     {
-        return $this->log('breach_' . $type, $description, severity: 'critical');
+        return $this->log('breach_'.$type, $description, severity: 'critical');
     }
 
     public function logMfaEvent(int $userId, string $action, bool $success): SecurityLog
     {
         return $this->log(
             $success ? 'mfa_success' : 'mfa_failed',
-            "MFA {$action}: " . ($success ? 'success' : 'failed'),
+            "MFA {$action}: ".($success ? 'success' : 'failed'),
             ['mfa_action' => $action],
             $userId,
             $success ? 'info' : 'warning'
@@ -94,6 +94,7 @@ class SecurityAuditService
     public function purgeOldLogs(): int
     {
         $retentionDays = config('security.audit.retention_days', 365);
+
         return SecurityLog::where('created_at', '<', now()->subDays($retentionDays))->delete();
     }
 }

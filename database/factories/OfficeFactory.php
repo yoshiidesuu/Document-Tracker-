@@ -12,7 +12,7 @@ class OfficeFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->unique()->company() . ' Office',
+            'name' => fake()->unique()->company().' Office',
             'description' => fake()->paragraph(),
             'is_active' => fake()->boolean(90),
         ];

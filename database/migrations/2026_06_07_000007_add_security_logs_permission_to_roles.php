@@ -14,7 +14,7 @@ return new class extends Migration
             $add = ['security-logs', 'security-logs.access'];
 
             foreach ($add as $p) {
-                if (!in_array($p, $perms)) {
+                if (! in_array($p, $perms)) {
                     $perms[] = $p;
                 }
             }
@@ -29,7 +29,7 @@ return new class extends Migration
 
         foreach ($roles as $role) {
             $perms = $role->permissions ?? [];
-            $perms = array_values(array_filter($perms, fn ($p) => !in_array($p, ['security-logs', 'security-logs.access'])));
+            $perms = array_values(array_filter($perms, fn ($p) => ! in_array($p, ['security-logs', 'security-logs.access'])));
             $role->update(['permissions' => $perms]);
         }
     }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class SystemSetting extends Model
 {
@@ -13,9 +14,12 @@ class SystemSetting extends Model
     public static function get(string $key, mixed $default = null): mixed
     {
         $setting = static::where('key', $key)->first();
-        if (!$setting) return $default;
+        if (! $setting) {
+            return $default;
+        }
         $value = $setting->value;
         $decoded = json_decode($value, true);
+
         return json_last_error() === JSON_ERROR_NONE ? $decoded : $value;
     }
 
@@ -28,12 +32,13 @@ class SystemSetting extends Model
     public static function getFileDataUrl(string $settingKey, string $storagePath): ?string
     {
         $filename = self::get($settingKey);
-        if (!$filename || !\Illuminate\Support\Facades\Storage::disk('local')->exists("{$storagePath}/{$filename}")) {
+        if (! $filename || ! Storage::disk('local')->exists("{$storagePath}/{$filename}")) {
             return null;
         }
-        $path = \Illuminate\Support\Facades\Storage::disk('local')->path("{$storagePath}/{$filename}");
+        $path = Storage::disk('local')->path("{$storagePath}/{$filename}");
         $mime = mime_content_type($path) ?: 'image/png';
         $data = file_get_contents($path);
-        return 'data:' . $mime . ';base64,' . base64_encode($data);
+
+        return 'data:'.$mime.';base64,'.base64_encode($data);
     }
 }

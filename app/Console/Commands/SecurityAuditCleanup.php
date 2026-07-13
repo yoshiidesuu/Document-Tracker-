@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 class SecurityAuditCleanup extends Command
 {
     protected $signature = 'security:audit-cleanup';
+
     protected $description = 'Purge old security audit logs';
 
     public function handle(SecurityAuditService $auditService): void

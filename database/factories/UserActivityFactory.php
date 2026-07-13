@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\UserActivity;
 use App\Models\User;
+use App\Models\UserActivity;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UserActivityFactory extends Factory

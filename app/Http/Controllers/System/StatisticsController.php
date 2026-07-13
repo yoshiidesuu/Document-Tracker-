@@ -5,7 +5,7 @@ namespace App\Http\Controllers\System;
 use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\DocumentTrack;
-use App\Models\DocumentType;
+use App\Models\Office;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -61,13 +61,15 @@ class StatisticsController extends Controller
     {
         $users = User::with('office')->whereNotNull('office_id')->get()->groupBy('office_id');
         $officeIds = $users->keys();
-        $offices = \App\Models\Office::whereIn('id', $officeIds)->get()->keyBy('id');
+        $offices = Office::whereIn('id', $officeIds)->get()->keyBy('id');
 
         $stats = [];
 
         foreach ($users as $officeId => $officeUsers) {
             $office = $offices->get($officeId);
-            if (!$office) continue;
+            if (! $office) {
+                continue;
+            }
 
             $userIds = $officeUsers->pluck('id');
 
@@ -77,7 +79,7 @@ class StatisticsController extends Controller
                 ->get(['received_at', 'released_at']);
 
             $totalHandled = $handledTracks->count();
-            $minutes = $handledTracks->map(fn($t) => (int) $t->received_at->diffInRealMinutes($t->released_at))->toArray();
+            $minutes = $handledTracks->map(fn ($t) => (int) $t->received_at->diffInRealMinutes($t->released_at))->toArray();
 
             $avgMinutes = $totalHandled > 0 ? round(array_sum($minutes) / $totalHandled, 1) : 0;
             $medianMinutes = $totalHandled > 0 ? $this->median($minutes) : 0;
@@ -113,7 +115,7 @@ class StatisticsController extends Controller
             ->orderByDesc('count')
             ->get();
 
-        return $raw->map(fn($r) => [
+        return $raw->map(fn ($r) => [
             'label' => $r->document_type,
             'count' => (int) $r->count,
         ])->toArray();
@@ -160,7 +162,7 @@ class StatisticsController extends Controller
             ->orderByDesc('count')
             ->get();
 
-        return $raw->map(fn($r) => [
+        return $raw->map(fn ($r) => [
             'label' => $r->arta_category ? ucfirst(str_replace('_', ' ', $r->arta_category)) : 'Uncategorized',
             'count' => (int) $r->count,
         ])->toArray();
@@ -173,7 +175,7 @@ class StatisticsController extends Controller
             ->orderBy('month')
             ->get();
 
-        return $raw->map(fn($r) => [
+        return $raw->map(fn ($r) => [
             'month' => $r->month,
             'count' => (int) $r->count,
         ])->toArray();
@@ -185,7 +187,7 @@ class StatisticsController extends Controller
             ->whereNotNull('released_at')
             ->get(['received_at', 'released_at']);
 
-        $minutes = $allTracks->map(fn($t) => (int) $t->received_at->diffInRealMinutes($t->released_at))->toArray();
+        $minutes = $allTracks->map(fn ($t) => (int) $t->received_at->diffInRealMinutes($t->released_at))->toArray();
         $count = count($minutes);
 
         if ($count === 0) {
@@ -216,30 +218,30 @@ class StatisticsController extends Controller
     ): string {
         $data = [];
 
-        if (!empty($statusDistribution)) {
+        if (! empty($statusDistribution)) {
             $data['statusLabels'] = array_column($statusDistribution, 'label');
             $data['statusValues'] = array_column($statusDistribution, 'count');
         }
 
-        if (!empty($documentTypeStats)) {
+        if (! empty($documentTypeStats)) {
             $data['typeLabels'] = array_column($documentTypeStats, 'label');
             $data['typeValues'] = array_column($documentTypeStats, 'count');
         }
 
-        if (!empty($artaCategoryStats)) {
+        if (! empty($artaCategoryStats)) {
             $data['artaLabels'] = array_column($artaCategoryStats, 'label');
             $data['artaValues'] = array_column($artaCategoryStats, 'count');
         }
 
-        if (!empty($monthlyTrends)) {
+        if (! empty($monthlyTrends)) {
             $data['trendLabels'] = array_column($monthlyTrends, 'month');
             $data['trendValues'] = array_column($monthlyTrends, 'count');
         }
 
-        if (!empty($perOffice)) {
-            $data['officeLabels'] = array_map(fn($s) => $s['office']->name, $perOffice);
-            $data['officeHandled'] = array_map(fn($s) => $s['total_handled'], $perOffice);
-            $data['officeAvgHours'] = array_map(fn($s) => round($s['avg_minutes'] / 60, 1), $perOffice);
+        if (! empty($perOffice)) {
+            $data['officeLabels'] = array_map(fn ($s) => $s['office']->name, $perOffice);
+            $data['officeHandled'] = array_map(fn ($s) => $s['total_handled'], $perOffice);
+            $data['officeAvgHours'] = array_map(fn ($s) => round($s['avg_minutes'] / 60, 1), $perOffice);
         }
 
         return json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -260,13 +262,16 @@ class StatisticsController extends Controller
 
     private function minutesToLabel(float $minutes): string
     {
-        if ($minutes <= 0) return '0m';
+        if ($minutes <= 0) {
+            return '0m';
+        }
         $hours = floor($minutes / 60);
         $mins = round($minutes % 60);
 
         if ($hours > 0) {
-            return $hours . 'h ' . $mins . 'm';
+            return $hours.'h '.$mins.'m';
         }
-        return $mins . 'm';
+
+        return $mins.'m';
     }
 }

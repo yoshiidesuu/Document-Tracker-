@@ -7,10 +7,12 @@ use App\Models\ArtaSetting;
 use App\Models\Document;
 use App\Models\DocumentTrack;
 use App\Models\DocumentType;
+use App\Models\SystemSetting;
 use App\Services\UserActivityService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -29,7 +31,7 @@ class DocumentController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('document_type', 'like', "%{$search}%");
+                    ->orWhere('document_type', 'like', "%{$search}%");
             });
         }
 
@@ -74,7 +76,7 @@ class DocumentController extends Controller
         ]);
 
         $data['is_private'] = (bool) ($data['is_private'] ?? false);
-        if (!$data['is_private']) {
+        if (! $data['is_private']) {
             $data['access_key'] = null;
         }
 
@@ -89,7 +91,7 @@ class DocumentController extends Controller
         }
 
         $data['creator_id'] = auth()->id();
-        $data['qr_value'] = (string) \Illuminate\Support\Str::uuid();
+        $data['qr_value'] = (string) Str::uuid();
         $data['barcode_value'] = strtoupper(bin2hex(random_bytes(8)));
 
         $document = Document::create($data);
@@ -120,15 +122,16 @@ class DocumentController extends Controller
             $end = $track->released_at ?? now();
             $durationHours = $start->diffInRealHours($end);
             $durationMinutes = $start->diffInRealMinutes($end) % 60;
+
             return (object) [
                 'track' => $track,
                 'user' => $track->user,
                 'received_at' => $start,
                 'released_at' => $track->released_at,
-                'is_current' => !$track->released_at,
+                'is_current' => ! $track->released_at,
                 'duration_label' => $durationHours > 0
-                    ? $durationHours . 'h ' . $durationMinutes . 'm'
-                    : $durationMinutes . 'm',
+                    ? $durationHours.'h '.$durationMinutes.'m'
+                    : $durationMinutes.'m',
                 'duration_minutes' => (int) $start->diffInRealMinutes($end),
             ];
         });
@@ -194,10 +197,10 @@ class DocumentController extends Controller
         abort_unless(auth()->user()->hasPermission('documents.edit'), 403);
 
         if (in_array($document->status, ['finished', 'terminated'])) {
-            abort(403, 'This document has been ' . $document->status . ' and cannot be edited.');
+            abort(403, 'This document has been '.$document->status.' and cannot be edited.');
         }
 
-        if ($document->tracks()->exists() && !auth()->user()->hasRole('admin')) {
+        if ($document->tracks()->exists() && ! auth()->user()->hasRole('admin')) {
             abort(403, 'This document has already been received and can only be edited by an administrator.');
         }
 
@@ -220,10 +223,10 @@ class DocumentController extends Controller
         abort_unless(auth()->user()->hasPermission('documents.edit'), 403);
 
         if (in_array($document->status, ['finished', 'terminated'])) {
-            abort(403, 'This document has been ' . $document->status . ' and cannot be edited.');
+            abort(403, 'This document has been '.$document->status.' and cannot be edited.');
         }
 
-        if ($document->tracks()->exists() && !auth()->user()->hasRole('admin')) {
+        if ($document->tracks()->exists() && ! auth()->user()->hasRole('admin')) {
             abort(403, 'This document has already been received and can only be edited by an administrator.');
         }
 
@@ -245,7 +248,7 @@ class DocumentController extends Controller
         ]);
 
         $data['is_private'] = (bool) ($data['is_private'] ?? false);
-        if (!$data['is_private']) {
+        if (! $data['is_private']) {
             $data['access_key'] = null;
         }
 
@@ -289,7 +292,7 @@ class DocumentController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('document_type', 'like', "%{$search}%");
+                    ->orWhere('document_type', 'like', "%{$search}%");
             });
         }
 
@@ -298,7 +301,7 @@ class DocumentController extends Controller
         }
 
         $documents = $query->orderByDesc('created_at')->get();
-        $documentTypes = \App\Models\DocumentType::where('is_active', true)->orderBy('name')->get();
+        $documentTypes = DocumentType::where('is_active', true)->orderBy('name')->get();
 
         return view('system.documents.my', compact('documents', 'documentTypes'));
     }
@@ -307,7 +310,7 @@ class DocumentController extends Controller
     {
         abort_unless(auth()->user()->hasPermission('documents.my-scanned'), 403);
 
-        $documentIds = \App\Models\DocumentTrack::where('user_id', auth()->id())
+        $documentIds = DocumentTrack::where('user_id', auth()->id())
             ->select('document_id')
             ->distinct()
             ->pluck('document_id');
@@ -317,7 +320,7 @@ class DocumentController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('document_type', 'like', "%{$search}%");
+                    ->orWhere('document_type', 'like', "%{$search}%");
             });
         }
 
@@ -326,7 +329,7 @@ class DocumentController extends Controller
         }
 
         $documents = $query->orderByDesc('created_at')->get();
-        $documentTypes = \App\Models\DocumentType::where('is_active', true)->orderBy('name')->get();
+        $documentTypes = DocumentType::where('is_active', true)->orderBy('name')->get();
 
         return view('system.documents.my-scanned', compact('documents', 'documentTypes'));
     }
@@ -340,10 +343,10 @@ class DocumentController extends Controller
         $document->load('creator.department', 'creator.office');
 
         $settings = [
-            'header_title' => \App\Models\SystemSetting::get('document_header_title', \App\Models\SystemSetting::get('site_long_name', config('app.name', 'Document Tracker'))),
-            'emails' => \App\Models\SystemSetting::get('emails', []),
-            'contacts' => \App\Models\SystemSetting::get('contacts', []),
-            'addresses' => \App\Models\SystemSetting::get('addresses', []),
+            'header_title' => SystemSetting::get('document_header_title', SystemSetting::get('site_long_name', config('app.name', 'Document Tracker'))),
+            'emails' => SystemSetting::get('emails', []),
+            'contacts' => SystemSetting::get('contacts', []),
+            'addresses' => SystemSetting::get('addresses', []),
         ];
 
         $qrDataUrl = $document->getQrCodeUrl();
@@ -371,12 +374,13 @@ class DocumentController extends Controller
             ->orWhere('barcode_value', $code)
             ->first();
 
-        if (!$document) {
+        if (! $document) {
             return response()->json(['error' => 'Document not found with this code.'], 404);
         }
 
         if (in_array($document->status, ['finished', 'terminated'])) {
             $label = $document->status === 'terminated' ? 'terminated' : 'finished';
+
             return response()->json(['error' => "This document has been {$label} and cannot be received."], 403);
         }
 
@@ -409,6 +413,7 @@ class DocumentController extends Controller
 
         if (in_array($document->status, ['finished', 'terminated'])) {
             $label = $document->status === 'terminated' ? 'terminated' : 'finished';
+
             return response()->json(['error' => "This document has been {$label} and cannot be received."], 403);
         }
 
@@ -450,7 +455,7 @@ class DocumentController extends Controller
         abort_unless(auth()->user()->hasPermission('documents.finish'), 403);
 
         if (in_array($document->status, ['finished', 'terminated'])) {
-            return response()->json(['error' => 'This document has already been ' . $document->status . '.'], 400);
+            return response()->json(['error' => 'This document has already been '.$document->status.'.'], 400);
         }
 
         DocumentTrack::where('document_id', $document->id)
@@ -470,7 +475,7 @@ class DocumentController extends Controller
     {
         abort_unless(auth()->user()->hasPermission('documents.reopen'), 403);
 
-        if (!in_array($document->status, ['finished', 'terminated'])) {
+        if (! in_array($document->status, ['finished', 'terminated'])) {
             return response()->json(['error' => 'Only finished or terminated documents can be reopened.'], 400);
         }
 
@@ -495,7 +500,7 @@ class DocumentController extends Controller
         abort_unless(auth()->user()->hasPermission('documents.terminate'), 403);
 
         if (in_array($document->status, ['finished', 'terminated'])) {
-            return response()->json(['error' => 'This document has already been ' . $document->status . '.'], 400);
+            return response()->json(['error' => 'This document has already been '.$document->status.'.'], 400);
         }
 
         $validated = request()->validate(['reason' => ['required', 'string', 'max:5000']]);

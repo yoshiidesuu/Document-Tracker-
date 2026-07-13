@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\SystemSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class SettingController extends Controller
@@ -14,6 +13,7 @@ class SettingController extends Controller
     public function index(): View
     {
         abort_unless(auth()->user()->hasPermission('settings.access'), 403);
+
         return view('system.settings', [
             'settings' => [
                 'site_logo' => SystemSetting::get('site_logo'),
@@ -61,14 +61,14 @@ class SettingController extends Controller
 
         if ($request->hasFile('site_logo')) {
             $request->validate(['site_logo' => ['image', 'mimes:png,svg,jpg,jpeg', 'max:15360']]);
-            $filename = 'logo.' . $request->file('site_logo')->extension();
+            $filename = 'logo.'.$request->file('site_logo')->extension();
             $request->file('site_logo')->storeAs('system/logo', $filename, 'local');
             SystemSetting::set('site_logo', $filename);
         }
 
         if ($request->hasFile('document_right_logo')) {
             $request->validate(['document_right_logo' => ['image', 'mimes:png,svg,jpg,jpeg', 'max:15360']]);
-            $filename = 'logo.' . $request->file('document_right_logo')->extension();
+            $filename = 'logo.'.$request->file('document_right_logo')->extension();
             $request->file('document_right_logo')->storeAs('system/document-logo-right', $filename, 'local');
             SystemSetting::set('document_right_logo', $filename);
         }
@@ -76,7 +76,7 @@ class SettingController extends Controller
         if ($request->hasFile('site_favicon')) {
             $request->validate(['site_favicon' => ['image', 'mimes:png,svg,ico,jpg,jpeg', 'max:15360']]);
             $ext = $request->file('site_favicon')->extension();
-            $filename = 'favicon.' . $ext;
+            $filename = 'favicon.'.$ext;
             $request->file('site_favicon')->storeAs('system/favicon', $filename, 'local');
             SystemSetting::set('site_favicon', $filename);
         }

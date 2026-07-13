@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\ArtaSetting;
+use App\Models\Document;
 use App\Models\DocumentType;
 use App\Models\Role;
 use App\Models\User;
@@ -14,19 +15,20 @@ class DocumentTypeArtaTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected Role $adminRole;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->adminRole = Role::factory()->create([
-            'name' => 'Administrator', 
+            'name' => 'Administrator',
             'slug' => 'admin',
             'permissions' => [
-                'document-types.list', 'document-types.create', 'document-types.view', 
+                'document-types.list', 'document-types.create', 'document-types.view',
                 'document-types.edit', 'document-types.delete', 'document-types.toggle-status',
-                'arta.list', 'arta.create', 'arta.view', 'arta.edit', 'arta.delete', 'arta.toggle-status'
-            ]
+                'arta.list', 'arta.create', 'arta.view', 'arta.edit', 'arta.delete', 'arta.toggle-status',
+            ],
         ]);
 
         $this->admin = User::factory()->create([
@@ -227,7 +229,7 @@ class DocumentTypeArtaTest extends TestCase
         $this->assertEquals(7, $artaSetting->days);
     }
 
-// @test
+    // @test
     public function testadmin_can_toggle_arta_setting_status(): void
     {
         $artaSetting = ArtaSetting::factory()->create(['is_active' => true]);
@@ -257,7 +259,7 @@ class DocumentTypeArtaTest extends TestCase
     // @test
     public function testdocument_model_generates_qr_code_url(): void
     {
-        $document = \App\Models\Document::factory()->create([
+        $document = Document::factory()->create([
             'qr_value' => 'TEST-QR-123',
         ]);
 
@@ -269,7 +271,7 @@ class DocumentTypeArtaTest extends TestCase
     // @test
     public function testdocument_model_generates_barcode_url(): void
     {
-        $document = \App\Models\Document::factory()->create([
+        $document = Document::factory()->create([
             'barcode_value' => 'TEST-BARCODE-123',
         ]);
 
@@ -283,7 +285,7 @@ class DocumentTypeArtaTest extends TestCase
     {
         $artaSetting = ArtaSetting::factory()->create(['category' => 'simple', 'days' => 3]);
 
-        $document = \App\Models\Document::factory()->create([
+        $document = Document::factory()->create([
             'arta_setting_id' => $artaSetting->id,
             'arta_category' => 'simple',
         ]);
@@ -294,7 +296,7 @@ class DocumentTypeArtaTest extends TestCase
     // @test
     public function testdocument_model_uses_default_days_when_no_setting(): void
     {
-        $document = \App\Models\Document::factory()->create([
+        $document = Document::factory()->create([
             'arta_setting_id' => null,
             'arta_category' => 'complex',
         ]);
@@ -305,7 +307,7 @@ class DocumentTypeArtaTest extends TestCase
     // @test
     public function testdocument_model_uses_highly_technical_days(): void
     {
-        $document = \App\Models\Document::factory()->create([
+        $document = Document::factory()->create([
             'arta_setting_id' => null,
             'arta_category' => 'highly_technical',
         ]);

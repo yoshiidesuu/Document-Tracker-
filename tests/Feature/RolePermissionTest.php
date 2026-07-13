@@ -12,15 +12,16 @@ class RolePermissionTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected Role $adminRole;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->adminRole = Role::factory()->create([
-            'name' => 'Administrator', 
+            'name' => 'Administrator',
             'slug' => 'admin',
-            'permissions' => ['roles.list', 'roles.create', 'roles.view', 'roles.edit', 'roles.delete', 'permissions.manage']
+            'permissions' => ['roles.list', 'roles.create', 'roles.view', 'roles.edit', 'roles.delete', 'permissions.manage'],
         ]);
 
         $this->admin = User::factory()->create([
@@ -138,7 +139,7 @@ class RolePermissionTest extends TestCase
         $this->assertDatabaseHas('roles', ['id' => $role->id]);
     }
 
-// @test
+    // @test
     public function testadmin_can_view_permissions(): void
     {
         $response = $this->actingAs($this->admin)->get(route('system.permissions.index'));
@@ -147,7 +148,7 @@ class RolePermissionTest extends TestCase
         $response->assertViewIs('system.permissions.index');
     }
 
-// @test
+    // @test
     public function testadmin_can_update_permissions(): void
     {
         $role = Role::factory()->create();

@@ -21,6 +21,7 @@ class RoleController extends Controller
         abort_unless(auth()->user()->hasPermission('roles.list'), 403);
 
         $roles = Role::withCount('users')->orderBy('name')->get();
+
         return view('system.roles.index', compact('roles'));
     }
 

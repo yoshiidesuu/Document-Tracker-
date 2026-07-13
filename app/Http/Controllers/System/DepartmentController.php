@@ -21,6 +21,7 @@ class DepartmentController extends Controller
         abort_unless(auth()->user()->hasPermission('departments.list'), 403);
 
         $departments = Department::orderBy('name')->get();
+
         return view('system.departments.index', compact('departments'));
     }
 
@@ -101,7 +102,7 @@ class DepartmentController extends Controller
         abort_unless(auth()->user()->hasPermission('departments.toggle-status'), 403);
 
         $old = ['is_active' => $department->is_active];
-        $department->update(['is_active' => !$department->is_active]);
+        $department->update(['is_active' => ! $department->is_active]);
         $new = ['is_active' => $department->is_active];
 
         $status = $department->is_active ? 'activated' : 'deactivated';

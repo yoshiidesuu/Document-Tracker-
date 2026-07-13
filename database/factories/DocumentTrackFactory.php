@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\DocumentTrack;
 use App\Models\Document;
+use App\Models\DocumentTrack;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

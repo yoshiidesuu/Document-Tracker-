@@ -57,7 +57,7 @@ class RoleModelTest extends TestCase
     // @test
     public function testrole_fillable_attributes(): void
     {
-        $role = new Role();
+        $role = new Role;
         $fillable = $role->getFillable();
 
         $this->assertContains('name', $fillable);

@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Department;
+use App\Models\Office;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -25,8 +26,8 @@ class DepartmentModelTest extends TestCase
     public function testdepartment_offices_relationship(): void
     {
         $department = Department::factory()->create();
-        $office1 = \App\Models\Office::factory()->create(['department_id' => $department->id]);
-        $office2 = \App\Models\Office::factory()->create(['department_id' => $department->id]);
+        $office1 = Office::factory()->create(['department_id' => $department->id]);
+        $office2 = Office::factory()->create(['department_id' => $department->id]);
 
         $this->assertCount(2, $department->offices);
     }
@@ -34,7 +35,7 @@ class DepartmentModelTest extends TestCase
     // @test
     public function testdepartment_fillable_attributes(): void
     {
-        $department = new Department();
+        $department = new Department;
         $fillable = $department->getFillable();
 
         $this->assertContains('name', $fillable);
@@ -45,7 +46,7 @@ class DepartmentModelTest extends TestCase
     // @test
     public function testdepartment_casts(): void
     {
-        $department = new Department();
+        $department = new Department;
         $casts = $department->getCasts();
 
         $this->assertEquals('boolean', $casts['is_active']);

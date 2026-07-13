@@ -29,20 +29,21 @@ class ResetPasswordController extends Controller
             ->where('email', $request->email)
             ->first();
 
-        if (!$record || !hash_equals($record->token, hash('sha256', $request->token))) {
+        if (! $record || ! hash_equals($record->token, hash('sha256', $request->token))) {
             return redirect()->route('password.reset', $request->token)
                 ->withErrors(['email' => 'Invalid or expired password reset token.']);
         }
 
         if ($record->created_at < now()->subHour()) {
             DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
             return redirect()->route('password.reset', $request->token)
                 ->withErrors(['email' => 'This password reset link has expired. Please request a new one.']);
         }
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('password.reset', $request->token)
                 ->withErrors(['email' => 'We cannot find a user with that email address.']);
         }

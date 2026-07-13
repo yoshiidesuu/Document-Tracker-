@@ -4,8 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -32,14 +32,18 @@ class SecurityHeadersMiddleware
 
         if ($config['content-security-policy']) {
             $csp = $config['content-security-policy'];
-            $csp = preg_replace('/script-src\s+[^;]+/', '$0 ' . "'nonce-{$nonce}'", $csp);
+            $csp = preg_replace('/script-src\s+[^;]+/', '$0 '."'nonce-{$nonce}'", $csp);
             $response->headers->set('Content-Security-Policy', $csp);
         }
 
         if ($config['hsts']['enabled'] && $request->isSecure()) {
             $hsts = "max-age={$config['hsts']['max-age']}";
-            if ($config['hsts']['include-sub-domains']) $hsts .= '; includeSubDomains';
-            if ($config['hsts']['preload']) $hsts .= '; preload';
+            if ($config['hsts']['include-sub-domains']) {
+                $hsts .= '; includeSubDomains';
+            }
+            if ($config['hsts']['preload']) {
+                $hsts .= '; preload';
+            }
             $response->headers->set('Strict-Transport-Security', $hsts);
         }
 

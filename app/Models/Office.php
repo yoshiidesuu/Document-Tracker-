@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Database\Factories\OfficeFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Office extends Model
 {
@@ -14,11 +14,13 @@ class Office extends Model
     {
         return OfficeFactory::new();
     }
+
     protected $fillable = [
         'name',
         'code',
         'description',
         'is_active',
+        'department_id',
     ];
 
     protected function casts(): array

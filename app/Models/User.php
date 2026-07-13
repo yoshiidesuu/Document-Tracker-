@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\HasSecurityFeatures;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Traits\HasSecurityFeatures;
 
 #[Fillable([
     'name',
@@ -49,7 +51,7 @@ use App\Traits\HasSecurityFeatures;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasSecurityFeatures;
+    use HasFactory, HasSecurityFeatures, Notifiable;
 
     protected array $encryptable = ['email'];
 
@@ -77,14 +79,16 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: function (mixed $value, array $attributes) {
-                if (!empty($attributes['firstname']) || !empty($attributes['lastname'])) {
+                if (! empty($attributes['firstname']) || ! empty($attributes['lastname'])) {
                     $parts = array_filter([
                         $attributes['firstname'] ?? null,
                         $attributes['middlename'] ?? null,
                         $attributes['lastname'] ?? null,
                     ]);
-                    return !empty($parts) ? implode(' ', $parts) : ($value ?? '');
+
+                    return ! empty($parts) ? implode(' ', $parts) : ($value ?? '');
                 }
+
                 return $value ?? '';
             },
         );
@@ -97,22 +101,33 @@ class User extends Authenticatable
             $this->middlename,
             $this->lastname,
         ]);
-        return !empty($parts) ? implode(' ', $parts) : ($this->attributes['name'] ?? '');
+
+        return ! empty($parts) ? implode(' ', $parts) : ($this->attributes['name'] ?? '');
     }
 
     public function getProfilePictureUrlAttribute(): ?string
     {
-        if (!$this->profile_picture) return null;
-        if (str_starts_with($this->profile_picture, 'http')) return $this->profile_picture;
+        if (! $this->profile_picture) {
+            return null;
+        }
+        if (str_starts_with($this->profile_picture, 'http')) {
+            return $this->profile_picture;
+        }
         $filename = basename($this->profile_picture);
+
         return route('file.profile', ['filename' => $filename]);
     }
 
     public function getInitialsAttribute(): string
     {
         $initials = '';
-        if ($this->firstname) $initials .= strtoupper($this->firstname[0]);
-        if ($this->lastname) $initials .= strtoupper($this->lastname[0]);
+        if ($this->firstname) {
+            $initials .= strtoupper($this->firstname[0]);
+        }
+        if ($this->lastname) {
+            $initials .= strtoupper($this->lastname[0]);
+        }
+
         return $initials ?: strtoupper(substr($this->attributes['name'] ?? 'U', 0, 2));
     }
 
@@ -123,20 +138,20 @@ class User extends Authenticatable
 
     public function isActive(): bool
     {
-        return $this->status === 'active' && !$this->banned && !$this->locked;
+        return $this->status === 'active' && ! $this->banned && ! $this->locked;
     }
 
-    public function roles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class);
     }
 
-    public function department(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
     }
 
-    public function office(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function office(): BelongsTo
     {
         return $this->belongsTo(Office::class);
     }
@@ -144,6 +159,7 @@ class User extends Authenticatable
     public function hasRole(string|array $roles): bool
     {
         $roles = is_array($roles) ? $roles : func_get_args();
+
         return $this->roles()->whereIn('slug', $roles)->exists();
     }
 
@@ -153,8 +169,11 @@ class User extends Authenticatable
             return true;
         }
         foreach ($this->roles as $role) {
-            if ($role->hasPermission($permission)) return true;
+            if ($role->hasPermission($permission)) {
+                return true;
+            }
         }
+
         return false;
     }
 }

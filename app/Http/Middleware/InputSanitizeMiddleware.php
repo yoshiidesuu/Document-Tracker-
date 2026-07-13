@@ -12,7 +12,7 @@ class InputSanitizeMiddleware
 
     public function handle(Request $request, Closure $next): Response
     {
-        if (!config('security.input_validation.sanitize_all_inputs')) {
+        if (! config('security.input_validation.sanitize_all_inputs')) {
             return $next($request);
         }
 
@@ -28,6 +28,7 @@ class InputSanitizeMiddleware
         foreach ($input as $key => $value) {
             if (in_array($key, $this->skipFields, true)) {
                 $result[$key] = $value;
+
                 continue;
             }
             if (is_array($value)) {
@@ -38,6 +39,7 @@ class InputSanitizeMiddleware
                 $result[$key] = $value;
             }
         }
+
         return $result;
     }
 

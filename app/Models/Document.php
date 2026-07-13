@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use Database\Factories\DocumentFactory;
-use Illuminate\Database\Eloquent\Model;
+use Endroid\QrCode\Builder\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class Document extends Model
 {
@@ -14,6 +17,7 @@ class Document extends Model
     {
         return DocumentFactory::new();
     }
+
     protected $fillable = [
         'title',
         'document_type',
@@ -61,25 +65,26 @@ class Document extends Model
     public function pastHolders()
     {
         return $this->hasMany(DocumentTrack::class)->whereNotNull('released_at')->orWhere(function ($q) {
-            $q->whereNull('released_at')->where('user_id', '!=', \Illuminate\Support\Facades\Auth::id());
+            $q->whereNull('released_at')->where('user_id', '!=', Auth::id());
         })->orderByDesc('received_at');
     }
 
     public function getQrCodeUrl(): string
     {
-        $result = (new \Endroid\QrCode\Builder\Builder())->build(
+        $result = (new Builder)->build(
             data: $this->qr_value,
             size: 220,
             margin: 10
         );
 
-        return 'data:image/png;base64,' . base64_encode($result->getString());
+        return 'data:image/png;base64,'.base64_encode($result->getString());
     }
 
     public function getBarcodeUrl(): string
     {
-        $generator = new \Picqer\Barcode\BarcodeGeneratorPNG;
-        return 'data:image/png;base64,' . base64_encode(
+        $generator = new BarcodeGeneratorPNG;
+
+        return 'data:image/png;base64,'.base64_encode(
             $generator->getBarcode($this->barcode_value, $generator::TYPE_CODE_128, 4, 120)
         );
     }
@@ -104,6 +109,7 @@ class Document extends Model
         }
 
         $days = $this->arta_processing_days;
-        return $days ? $days . ' day' . ($days > 1 ? 's' : '') : '-';
+
+        return $days ? $days.' day'.($days > 1 ? 's' : '') : '-';
     }
 }

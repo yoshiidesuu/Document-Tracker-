@@ -2,9 +2,9 @@
 
 namespace Tests\Unit;
 
+use App\Models\Department;
 use App\Models\Office;
 use App\Models\User;
-use App\Models\Department;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,7 +34,7 @@ class OfficeModelTest extends TestCase
     // @test
     public function testoffice_fillable_attributes(): void
     {
-        $office = new Office();
+        $office = new Office;
         $fillable = $office->getFillable();
 
         $this->assertContains('name', $fillable);
@@ -46,7 +46,7 @@ class OfficeModelTest extends TestCase
     // @test
     public function testoffice_casts(): void
     {
-        $office = new Office();
+        $office = new Office;
         $casts = $office->getCasts();
 
         $this->assertEquals('boolean', $casts['is_active']);

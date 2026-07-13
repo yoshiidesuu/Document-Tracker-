@@ -42,9 +42,9 @@ class ProfileController extends Controller
 
         if ($request->hasFile('profile_picture')) {
             if ($user->profile_picture) {
-                Storage::disk('local')->delete('profile-pictures/' . $user->profile_picture);
+                Storage::disk('local')->delete('profile-pictures/'.$user->profile_picture);
             }
-            $filename = $user->id . '_' . time() . '.' . $request->file('profile_picture')->extension();
+            $filename = $user->id.'_'.time().'.'.$request->file('profile_picture')->extension();
             $request->file('profile_picture')->storeAs('profile-pictures', $filename, 'local');
             $data['profile_picture'] = $filename;
         }

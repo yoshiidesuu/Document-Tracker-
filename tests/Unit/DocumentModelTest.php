@@ -2,10 +2,9 @@
 
 namespace Tests\Unit;
 
+use App\Models\ArtaSetting;
 use App\Models\Document;
 use App\Models\DocumentTrack;
-use App\Models\DocumentType;
-use App\Models\ArtaSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -17,7 +16,7 @@ class DocumentModelTest extends TestCase
     // @test
     public function testdocument_fillable_attributes(): void
     {
-        $document = new Document();
+        $document = new Document;
         $fillable = $document->getFillable();
 
         $this->assertContains('title', $fillable);
@@ -38,7 +37,7 @@ class DocumentModelTest extends TestCase
     // @test
     public function testdocument_casts(): void
     {
-        $document = new Document();
+        $document = new Document;
         $casts = $document->getCasts();
 
         $this->assertEquals('boolean', $casts['is_private']);

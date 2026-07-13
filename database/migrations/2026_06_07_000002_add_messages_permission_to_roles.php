@@ -14,7 +14,7 @@ return new class extends Migration
             $new = ['messages', 'messages.access', 'messages.send'];
 
             foreach ($new as $p) {
-                if (!in_array($p, $perms)) {
+                if (! in_array($p, $perms)) {
                     $perms[] = $p;
                 }
             }
@@ -29,7 +29,7 @@ return new class extends Migration
 
         foreach ($roles as $role) {
             $perms = $role->permissions ?? [];
-            $perms = array_values(array_filter($perms, fn ($p) => !in_array($p, ['messages', 'messages.access', 'messages.send'])));
+            $perms = array_values(array_filter($perms, fn ($p) => ! in_array($p, ['messages', 'messages.access', 'messages.send'])));
             $role->update(['permissions' => $perms]);
         }
     }

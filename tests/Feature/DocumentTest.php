@@ -17,30 +17,35 @@ class DocumentTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected Role $adminRole;
+
     protected User $staff;
+
     protected Department $department;
+
     protected Office $office;
+
     protected DocumentType $documentType;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->adminRole = Role::factory()->create([
-            'name' => 'Administrator', 
+            'name' => 'Administrator',
             'slug' => 'admin',
             'permissions' => [
-                'documents.list', 'documents.create', 'documents.view', 'documents.edit', 
-                'documents.delete', 'documents.my', 'documents.my-scanned', 
-                'documents.receive', 'documents.finish', 'documents.terminate', 'documents.reopen'
-            ]
+                'documents.list', 'documents.create', 'documents.view', 'documents.edit',
+                'documents.delete', 'documents.my', 'documents.my-scanned',
+                'documents.receive', 'documents.finish', 'documents.terminate', 'documents.reopen',
+            ],
         ]);
         $this->staffRole = Role::factory()->create([
-            'name' => 'Staff', 
+            'name' => 'Staff',
             'slug' => 'staff',
             'permissions' => [
-                'documents.receive', 'documents.finish', 'documents.terminate', 'documents.my', 'documents.my-scanned'
-            ]
+                'documents.receive', 'documents.finish', 'documents.terminate', 'documents.my', 'documents.my-scanned',
+            ],
         ]);
 
         $this->admin = User::factory()->create([
@@ -175,7 +180,7 @@ class DocumentTest extends TestCase
         $response->assertViewIs('system.documents.my');
     }
 
-// @test
+    // @test
     public function testdocument_receive_workflow(): void
     {
         $document = Document::factory()->create([
@@ -232,7 +237,7 @@ class DocumentTest extends TestCase
         $this->assertNotNull($track->released_at);
     }
 
-// @test
+    // @test
     public function testdocument_terminate_workflow(): void
     {
         $document = Document::factory()->create([
@@ -331,7 +336,7 @@ class DocumentTest extends TestCase
         ]);
     }
 
-// @test
+    // @test
     public function testdocument_lookup_returns_not_found_for_invalid_code(): void
     {
         $response = $this->actingAs($this->staff)->post(route('system.documents.receive.lookup'), [

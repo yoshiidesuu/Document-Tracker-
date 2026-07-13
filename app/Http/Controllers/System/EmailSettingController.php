@@ -66,13 +66,13 @@ class EmailSettingController extends Controller
         $this->overrideMailConfig();
 
         try {
-            Mail::to($request->test_email)->send(new TestMail());
+            Mail::to($request->test_email)->send(new TestMail);
 
             return redirect()->route('system.email-settings')
                 ->with('success', "Test email sent successfully to {$request->test_email}.");
         } catch (\Throwable $e) {
             return redirect()->route('system.email-settings')
-                ->with('error', 'Failed to send test email: ' . $e->getMessage());
+                ->with('error', 'Failed to send test email: '.$e->getMessage());
         }
     }
 

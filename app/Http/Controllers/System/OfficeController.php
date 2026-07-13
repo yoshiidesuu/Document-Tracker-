@@ -21,6 +21,7 @@ class OfficeController extends Controller
         abort_unless(auth()->user()->hasPermission('offices.list'), 403);
 
         $offices = Office::orderBy('name')->get();
+
         return view('system.offices.index', compact('offices'));
     }
 
@@ -101,7 +102,7 @@ class OfficeController extends Controller
         abort_unless(auth()->user()->hasPermission('offices.toggle-status'), 403);
 
         $old = ['is_active' => $office->is_active];
-        $office->update(['is_active' => !$office->is_active]);
+        $office->update(['is_active' => ! $office->is_active]);
         $new = ['is_active' => $office->is_active];
 
         $status = $office->is_active ? 'activated' : 'deactivated';

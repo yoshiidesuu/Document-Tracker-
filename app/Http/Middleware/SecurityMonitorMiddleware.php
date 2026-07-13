@@ -11,7 +11,7 @@ class SecurityMonitorMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!config('security.audit.enabled')) {
+        if (! config('security.audit.enabled')) {
             return $next($request);
         }
 
@@ -29,7 +29,7 @@ class SecurityMonitorMiddleware
 
     private function detectSuspiciousActivity(Request $request, Response $response): void
     {
-        if (!config('security.monitoring.detect_session_hijacking')) {
+        if (! config('security.monitoring.detect_session_hijacking')) {
             return;
         }
 
@@ -54,12 +54,12 @@ class SecurityMonitorMiddleware
 
     private function getRequestFingerprint(Request $request): string
     {
-        return sha1($request->ip() . '|' . $request->userAgent());
+        return sha1($request->ip().'|'.$request->userAgent());
     }
 
     private function logIfNeeded(Request $request, Response $response, float $duration): void
     {
-        if (!config('security.audit.log_all_requests')) {
+        if (! config('security.audit.log_all_requests')) {
             return;
         }
 

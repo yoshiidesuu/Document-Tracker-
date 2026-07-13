@@ -14,7 +14,7 @@ return new class extends Migration
             $new = ['settings.email'];
 
             foreach ($new as $p) {
-                if (!in_array($p, $perms)) {
+                if (! in_array($p, $perms)) {
                     $perms[] = $p;
                 }
             }

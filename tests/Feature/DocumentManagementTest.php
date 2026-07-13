@@ -19,10 +19,15 @@ class DocumentManagementTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     protected User $admin;
+
     protected User $staff;
+
     protected Department $department;
+
     protected Office $office;
+
     protected DocumentType $documentType;
+
     protected ArtaSetting $artaSetting;
 
     protected function setUp(): void
@@ -37,18 +42,18 @@ class DocumentManagementTest extends TestCase
             'name' => 'Administrator',
             'slug' => 'admin',
             'permissions' => [
-                'documents.list', 'documents.create', 'documents.view', 'documents.edit', 
-                'documents.delete', 'documents.my', 'documents.my-scanned', 
-                'documents.receive', 'documents.finish', 'documents.terminate', 'documents.reopen'
-            ]
+                'documents.list', 'documents.create', 'documents.view', 'documents.edit',
+                'documents.delete', 'documents.my', 'documents.my-scanned',
+                'documents.receive', 'documents.finish', 'documents.terminate', 'documents.reopen',
+            ],
         ]);
         $staffRole = Role::factory()->create([
-            'name' => 'Staff', 
+            'name' => 'Staff',
             'slug' => 'staff',
             'permissions' => [
-                'documents.my', 'documents.my-scanned', 
-                'documents.receive', 'documents.finish', 'documents.terminate', 'documents.reopen'
-            ]
+                'documents.my', 'documents.my-scanned',
+                'documents.receive', 'documents.finish', 'documents.terminate', 'documents.reopen',
+            ],
         ]);
 
         $this->department = Department::factory()->create(['name' => 'IT Department']);
@@ -104,7 +109,7 @@ class DocumentManagementTest extends TestCase
         $response->assertRedirect(route('login.form'));
     }
 
-// @test
+    // @test
     public function testadmin_can_create_document(): void
     {
         $data = [
@@ -128,7 +133,7 @@ class DocumentManagementTest extends TestCase
         ]);
     }
 
-// @test
+    // @test
     public function testdocument_creation_validates_required_fields(): void
     {
         $response = $this->actingAs($this->admin)->post(route('system.documents.store'), []);
@@ -178,16 +183,16 @@ class DocumentManagementTest extends TestCase
         ]);
 
         // Debug - check permissions
-        echo "Admin has documents.edit: " . ($this->admin->hasPermission('documents.edit') ? 'YES' : 'NO') . "\n";
-        
+        echo 'Admin has documents.edit: '.($this->admin->hasPermission('documents.edit') ? 'YES' : 'NO')."\n";
+
         // Debug
-        echo "Status: " . $response->getStatusCode() . "\n";
-        echo "Content: " . $response->getContent() . "\n";
-        echo "Headers: " . print_r($response->headers->all(), true) . "\n";
+        echo 'Status: '.$response->getStatusCode()."\n";
+        echo 'Content: '.$response->getContent()."\n";
+        echo 'Headers: '.print_r($response->headers->all(), true)."\n";
 
         $response->assertStatus(302);
         // Check redirect location
-        $this->assertStringContainsString('system/documents/' . $document->id, $response->headers->get('Location'));
+        $this->assertStringContainsString('system/documents/'.$document->id, $response->headers->get('Location'));
         $response->assertSessionHas('success');
 
         $document->refresh();

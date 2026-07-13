@@ -21,6 +21,7 @@ class DocumentTypeController extends Controller
         abort_unless(auth()->user()->hasPermission('document-types.list'), 403);
 
         $documentTypes = DocumentType::orderBy('name')->get();
+
         return view('system.document-types.index', compact('documentTypes'));
     }
 
@@ -101,7 +102,7 @@ class DocumentTypeController extends Controller
         abort_unless(auth()->user()->hasPermission('document-types.toggle-status'), 403);
 
         $old = ['is_active' => $documentType->is_active];
-        $documentType->update(['is_active' => !$documentType->is_active]);
+        $documentType->update(['is_active' => ! $documentType->is_active]);
         $new = ['is_active' => $documentType->is_active];
 
         $status = $documentType->is_active ? 'activated' : 'deactivated';

@@ -25,7 +25,7 @@ class ForgotPasswordController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'message' => 'If that email exists in our system, a password reset link has been sent.',
             ]);
@@ -55,7 +55,7 @@ class ForgotPasswordController extends Controller
             'mailConfig' => $mailConfig,
         ], function ($message) use ($user, $mailConfig) {
             $message->to($user->email)
-                ->subject('Reset Your Password - ' . config('app.name'));
+                ->subject('Reset Your Password - '.config('app.name'));
             if ($mailConfig['from_address']) {
                 $message->from($mailConfig['from_address'], $mailConfig['from_name'] ?? config('app.name'));
             }

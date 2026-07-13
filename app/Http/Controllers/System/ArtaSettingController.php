@@ -119,7 +119,7 @@ class ArtaSettingController extends Controller
         abort_unless(auth()->user()->hasPermission('arta.toggle-status'), 403);
 
         $old = ['is_active' => $artaSetting->is_active];
-        $artaSetting->update(['is_active' => !$artaSetting->is_active]);
+        $artaSetting->update(['is_active' => ! $artaSetting->is_active]);
         $new = ['is_active' => $artaSetting->is_active];
 
         $status = $artaSetting->is_active ? 'activated' : 'deactivated';

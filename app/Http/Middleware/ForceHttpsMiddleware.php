@@ -10,11 +10,11 @@ class ForceHttpsMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!config('security.network.enforce_https')) {
+        if (! config('security.network.enforce_https')) {
             return $next($request);
         }
 
-        if (!$request->isSecure() && !$this->isSafeEnvironment()) {
+        if (! $request->isSecure() && ! $this->isSafeEnvironment()) {
             return redirect()->secure($request->getRequestUri());
         }
 

@@ -164,9 +164,9 @@ return [
     */
 
     'dict' => [
-        'data_privacy_officer_email' => env('SEC_DPO_EMAIL', 'dpo@' . (parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST) ?: 'localhost')),
+        'data_privacy_officer_email' => env('SEC_DPO_EMAIL', 'dpo@'.(parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST) ?: 'localhost')),
         'breach_notification_enabled' => env('SEC_BREACH_NOTIFICATION', true),
-        'breach_notification_email' => env('SEC_BREACH_NOTIFICATION_EMAIL', 'security@' . (parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST) ?: 'localhost')),
+        'breach_notification_email' => env('SEC_BREACH_NOTIFICATION_EMAIL', 'security@'.(parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST) ?: 'localhost')),
         'data_retention_days' => (int) env('SEC_DATA_RETENTION_DAYS', 1825),
         'privacy_notice_url' => env('SEC_PRIVACY_NOTICE_URL', '/privacy'),
         'consent_required' => env('SEC_CONSENT_REQUIRED', true),
@@ -201,7 +201,7 @@ return [
         'detect_brute_force' => env('SEC_DETECT_BRUTE_FORCE', true),
         'detect_session_hijacking' => env('SEC_DETECT_SESSION_HIJACKING', true),
         'alert_on_suspicious_activity' => env('SEC_ALERT_SUSPICIOUS', true),
-        'alert_email' => env('SEC_ALERT_EMAIL', 'security@' . (parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST) ?: 'localhost')),
+        'alert_email' => env('SEC_ALERT_EMAIL', 'security@'.(parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST) ?: 'localhost')),
         'incident_response_team' => explode(',', (string) env('SEC_INCIDENT_RESPONSE_TEAM', '')),
     ],
 

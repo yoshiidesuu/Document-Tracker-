@@ -14,24 +14,29 @@ class UserManagementTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected User $staff;
+
     protected Department $department;
+
     protected Office $office;
+
     protected Role $adminRole;
+
     protected Role $staffRole;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->adminRole = Role::factory()->create([
-            'name' => 'Administrator', 
+            'name' => 'Administrator',
             'slug' => 'admin',
             'permissions' => [
-                'users.list', 'users.create', 'users.view', 'users.edit', 
-                'users.delete', 'users.bulk-ban', 'users.ban', 'users.unban', 
+                'users.list', 'users.create', 'users.view', 'users.edit',
+                'users.delete', 'users.bulk-ban', 'users.ban', 'users.unban',
                 'users.lock', 'users.unlock', 'users.force-logout',
-                'users.reset-password'
-            ]
+                'users.reset-password',
+            ],
         ]);
         $this->staffRole = Role::factory()->create(['name' => 'Staff', 'slug' => 'staff']);
 
@@ -67,7 +72,7 @@ class UserManagementTest extends TestCase
     }
 
     // @test
-public function teststaff_cannot_view_users_index(): void
+    public function teststaff_cannot_view_users_index(): void
     {
         $response = $this->actingAs($this->staff)->get(route('system.users.index'));
 
@@ -137,7 +142,7 @@ public function teststaff_cannot_view_users_index(): void
         $response->assertSee($this->staff->full_name);
     }
 
-// @test
+    // @test
     public function testadmin_can_update_user(): void
     {
         $response = $this->actingAs($this->admin)->post(route('system.users.update', $this->staff), [
@@ -222,7 +227,7 @@ public function teststaff_cannot_view_users_index(): void
         $response->assertRedirect(route('system.users.view', $this->staff));
         $response->assertSessionHas('success');
 
-$this->staff->refresh();
+        $this->staff->refresh();
         $this->assertFalse($this->staff->locked);
     }
 

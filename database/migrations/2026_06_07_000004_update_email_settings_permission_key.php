@@ -16,7 +16,7 @@ return new class extends Migration
 
             $add = ['email-settings', 'email-settings.access'];
             foreach ($add as $p) {
-                if (!in_array($p, $perms)) {
+                if (! in_array($p, $perms)) {
                     $perms[] = $p;
                 }
             }
@@ -32,9 +32,9 @@ return new class extends Migration
         foreach ($roles as $role) {
             $perms = $role->permissions ?? [];
 
-            $perms = array_values(array_filter($perms, fn ($p) => !in_array($p, ['email-settings', 'email-settings.access'])));
+            $perms = array_values(array_filter($perms, fn ($p) => ! in_array($p, ['email-settings', 'email-settings.access'])));
 
-            if (!in_array('settings.email', $perms)) {
+            if (! in_array('settings.email', $perms)) {
                 $perms[] = 'settings.email';
             }
 
