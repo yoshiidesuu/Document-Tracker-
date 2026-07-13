@@ -2,10 +2,18 @@
 
 namespace App\Models;
 
+use Database\Factories\DocumentFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Document extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory(): DocumentFactory
+    {
+        return DocumentFactory::new();
+    }
     protected $fillable = [
         'title',
         'document_type',

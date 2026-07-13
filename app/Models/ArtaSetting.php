@@ -2,10 +2,18 @@
 
 namespace App\Models;
 
+use Database\Factories\ArtaSettingFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ArtaSetting extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory(): ArtaSettingFactory
+    {
+        return ArtaSettingFactory::new();
+    }
     protected $table = 'arta_settings';
 
     protected $fillable = [

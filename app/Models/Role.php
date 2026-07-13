@@ -2,12 +2,21 @@
 
 namespace App\Models;
 
+use Database\Factories\RoleFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Role extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['name', 'slug', 'description', 'permissions', 'is_system'];
+
+    protected static function newFactory(): RoleFactory
+    {
+        return RoleFactory::new();
+    }
 
     protected function casts(): array
     {

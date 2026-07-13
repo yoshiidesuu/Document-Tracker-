@@ -2,10 +2,18 @@
 
 namespace App\Models;
 
+use Database\Factories\DepartmentFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Department extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory(): DepartmentFactory
+    {
+        return DepartmentFactory::new();
+    }
     protected $fillable = [
         'name',
         'code',

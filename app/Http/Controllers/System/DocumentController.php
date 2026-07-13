@@ -475,7 +475,7 @@ class DocumentController extends Controller
         }
 
         $old = $document->only(['status', 'termination_reason']);
-        $document->update(['status' => null, 'termination_reason' => null]);
+        $document->update(['status' => 'pending', 'termination_reason' => null]);
         $new = $document->only(['status', 'termination_reason']);
 
         $this->userActivity->log('document_reopened', "Document reopened: {$document->title}", oldData: $old, newData: $new);
