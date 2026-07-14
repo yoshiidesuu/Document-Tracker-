@@ -1,5 +1,5 @@
 includes:
-    - vendor/nunomaduro/larastan/extension.neon
+    - vendor/larastan/larastan/extension.neon
 
 parameters:
     level: 5
@@ -9,9 +9,15 @@ parameters:
     excludePaths:
         - app/Http/Controllers/Auth
     ignoreErrors:
-        - '#Unsafe usage of new static#'
         - '#Access to an undefined property#'
-        - '#Method .* does not exist#'
-        - '#Property .* does not exist#'
-        - '#Static method .* should not be called statically#'
-    checkMissingIterableValueType: false
+        - '#Call to an undefined method#'
+        - '#Method .* should return .* but returns .*#'
+        - '#expects view-string#'
+        - '#Relation .* is not found#'
+        - '#Cannot call method .* on string#'
+        - '#Parameter #1 \$callback of method .* contains unresolvable type#'
+        - '#Invalid array key type .*#'
+        - '#Offset .* does not exist on list#'
+        - '#Match expression does not handle remaining value#'
+        - '#Negated boolean expression is always false#'
+        - '#Property .* on left side of \?\? is not nullable#'

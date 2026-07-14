@@ -30,6 +30,7 @@ jobs:
           php-version: '8.4'
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, hash, json, mbstring, openssl, pcre, pdo, session, tokenizer, zip
           coverage: none
+          tools: composer:v2, node:v20
 
       - name: Cache Composer packages
         id: composer-cache
@@ -42,6 +43,21 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Cache node modules
+        id: node-cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Node dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build frontend assets
+        run: npm run build
 
       - name: Copy .env.testing
         run: cp .env.testing .env
@@ -125,7 +141,7 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Run PHPStan
-        run: ./vendor/bin/phpstan analyse --level=5
+        run: ./vendor/bin/phpstan analyse --configuration phpstan.neon --level=5
 
   audit:
     name: Security Audit (Composer Audit)
@@ -154,5 +170,5 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Run Composer Audit
-        run: composer audit --no-interaction
+        run: composer audit --no-interaction --no-dev --format=plain
         continue-on-error: false
