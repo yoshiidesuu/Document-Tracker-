@@ -1,0 +1,17 @@
+includes:
+    - vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+    level: 5
+    paths:
+        - app
+        - routes
+    excludePaths:
+        - app/Http/Controllers/Auth
+    ignoreErrors:
+        - '#Unsafe usage of new static#'
+        - '#Access to an undefined property#'
+        - '#Method .* does not exist#'
+        - '#Property .* does not exist#'
+        - '#Static method .* should not be called statically#'
+    checkMissingIterableValueType: false
