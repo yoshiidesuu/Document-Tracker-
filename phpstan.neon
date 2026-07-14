@@ -15,7 +15,7 @@ parameters:
         - '#expects view-string#'
         - '#Relation .* is not found#'
         - '#Cannot call method .* on string#'
-        - '#Parameter #1 \$callback of method .* contains unresolvable type#'
+        - '~Parameter #1 \$callback of method .* contains unresolvable type~i'
         - '#Invalid array key type .*#'
         - '#Offset .* does not exist on list#'
         - '#Match expression does not handle remaining value#'
