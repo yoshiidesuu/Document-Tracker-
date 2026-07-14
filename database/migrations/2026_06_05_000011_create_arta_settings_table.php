@@ -12,10 +12,12 @@ return new class extends Migration
             $table->id();
             $table->string('category');
             $table->string('title');
+            $table->text('description')->nullable();
             $table->unsignedInteger('days')->nullable();
             $table->unsignedInteger('hours')->nullable();
             $table->unsignedInteger('minutes')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->string('duration_label')->nullable();
             $table->timestamps();
 
             $table->unique(['category', 'title']);

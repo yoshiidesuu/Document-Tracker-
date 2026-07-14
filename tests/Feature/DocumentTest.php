@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ArtaSetting;
 use App\Models\Department;
 use App\Models\Document;
 use App\Models\DocumentTrack;
@@ -27,6 +28,8 @@ class DocumentTest extends TestCase
     protected Office $office;
 
     protected DocumentType $documentType;
+
+    protected ArtaSetting $artaSetting;
 
     protected function setUp(): void
     {
@@ -63,6 +66,7 @@ class DocumentTest extends TestCase
         $this->department = Department::factory()->create();
         $this->office = Office::factory()->create(['department_id' => $this->department->id]);
         $this->documentType = DocumentType::factory()->create();
+        $this->artaSetting = ArtaSetting::factory()->create(['category' => 'simple', 'days' => 3]);
     }
 
     // @test
@@ -80,20 +84,22 @@ class DocumentTest extends TestCase
     public function testadmin_can_create_document(): void
     {
         $data = [
-            'title' => 'Test Document',
+            'title' => 'Test Document Created by Admin',
             'document_type' => 'Memorandum',
             'processing_hours' => 8,
+            'arta_setting_id' => $this->artaSetting->id,
             'is_private' => false,
             'notes' => 'Test notes',
         ];
 
         $response = $this->actingAs($this->admin)->post(route('system.documents.store'), $data);
 
-        $response->assertRedirect(route('system.documents.print', Document::where('title', 'Test Document')->first()->id));
+        $createdDoc = Document::where('title', 'Test Document Created by Admin')->first();
+        $response->assertRedirect(route('system.documents.print', $createdDoc->id));
         $response->assertSessionHas('success');
 
         $this->assertDatabaseHas('documents', [
-            'title' => 'Test Document',
+            'title' => 'Test Document Created by Admin',
             'creator_id' => $this->admin->id,
         ]);
     }
@@ -103,7 +109,7 @@ class DocumentTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->post(route('system.documents.store'), []);
 
-        $response->assertSessionHasErrors(['title', 'document_type']);
+        $response->assertSessionHasErrors(['title', 'document_type', 'processing_hours', 'arta_setting_id']);
     }
 
     // @test
@@ -121,7 +127,10 @@ class DocumentTest extends TestCase
     // @test
     public function testadmin_can_edit_document(): void
     {
-        $document = Document::factory()->create(['creator_id' => $this->admin->id]);
+        $document = Document::factory()->create([
+            'creator_id' => $this->admin->id,
+            'status' => 'pending',
+        ]);
 
         $response = $this->actingAs($this->admin)->get(route('system.documents.edit', $document));
 
@@ -134,6 +143,7 @@ class DocumentTest extends TestCase
     {
         $document = Document::factory()->create([
             'creator_id' => $this->admin->id,
+            'arta_setting_id' => $this->artaSetting->id,
             'status' => 'pending',
         ]);
 
@@ -143,6 +153,7 @@ class DocumentTest extends TestCase
             'title' => 'Updated Document',
             'document_type' => 'Memorandum',
             'processing_hours' => 4,
+            'arta_setting_id' => $this->artaSetting->id,
             'is_private' => true,
             'notes' => 'Updated notes',
         ]);

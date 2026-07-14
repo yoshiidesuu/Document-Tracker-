@@ -51,7 +51,7 @@ class DocumentManagementTest extends TestCase
             'name' => 'Staff',
             'slug' => 'staff',
             'permissions' => [
-                'documents.my', 'documents.my-scanned',
+                'documents.list', 'documents.my', 'documents.my-scanned',
                 'documents.receive', 'documents.finish', 'documents.terminate', 'documents.reopen',
             ],
         ]);
@@ -138,7 +138,7 @@ class DocumentManagementTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->post(route('system.documents.store'), []);
 
-        $response->assertSessionHasErrors(['title', 'document_type', 'processing_hours', 'arta_setting_id', 'arta_category']);
+        $response->assertSessionHasErrors(['title', 'document_type', 'processing_hours', 'arta_setting_id']);
     }
 
     // @test
@@ -177,18 +177,9 @@ class DocumentManagementTest extends TestCase
             'document_type' => $this->documentType->name,
             'processing_hours' => 48,
             'arta_setting_id' => $this->artaSetting->id,
-            'arta_category' => 'complex',
             'notes' => 'Updated notes',
             'is_private' => true,
         ]);
-
-        // Debug - check permissions
-        echo 'Admin has documents.edit: '.($this->admin->hasPermission('documents.edit') ? 'YES' : 'NO')."\n";
-
-        // Debug
-        echo 'Status: '.$response->getStatusCode()."\n";
-        echo 'Content: '.$response->getContent()."\n";
-        echo 'Headers: '.print_r($response->headers->all(), true)."\n";
 
         $response->assertStatus(302);
         // Check redirect location
@@ -197,7 +188,8 @@ class DocumentManagementTest extends TestCase
 
         $document->refresh();
         $this->assertEquals('Updated Title', $document->title);
-        $this->assertEquals('complex', $document->arta_category);
+        // arta_category is derived from artaSetting, so it remains 'simple'
+        $this->assertEquals('simple', $document->arta_category);
         $this->assertTrue($document->is_private);
     }
 

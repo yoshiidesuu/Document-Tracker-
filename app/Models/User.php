@@ -165,9 +165,11 @@ class User extends Authenticatable
 
     public function hasPermission(string $permission): bool
     {
-        if ($permission === 'permissions.manage' && $this->hasRole('admin')) {
+        // Admin role has all permissions
+        if ($this->hasRole('admin')) {
             return true;
         }
+
         foreach ($this->roles as $role) {
             if ($role->hasPermission($permission)) {
                 return true;

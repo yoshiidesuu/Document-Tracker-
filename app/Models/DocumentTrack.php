@@ -18,6 +18,7 @@ class DocumentTrack extends Model
     protected $fillable = [
         'document_id',
         'user_id',
+        'action',
         'received_at',
         'released_at',
     ];

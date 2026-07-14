@@ -95,7 +95,7 @@ class DocumentModelTest extends TestCase
             'released_at' => null,
         ]);
 
-        $currentHolder = $document->currentHolder->first();
+        $currentHolder = $document->currentHolder;
         $this->assertNotNull($currentHolder);
         $this->assertEquals($user2->id, $currentHolder->user_id);
     }

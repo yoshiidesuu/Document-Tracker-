@@ -15,10 +15,10 @@ class RoleModelTest extends TestCase
     public function testrole_has_permissions_relationship(): void
     {
         $role = Role::factory()->create(['name' => 'Test Role', 'slug' => 'test-role']);
-        $permission1 = $role->permissions()->create(['name' => 'documents.create']);
-        $permission2 = $role->permissions()->create(['name' => 'documents.view']);
+        $permission1 = $role->rolePermissions()->create(['name' => 'documents.create']);
+        $permission2 = $role->rolePermissions()->create(['name' => 'documents.view']);
 
-        $this->assertCount(2, $role->permissions);
+        $this->assertCount(2, $role->rolePermissions);
         $this->assertEquals('documents.create', $permission1->name);
     }
 
@@ -26,7 +26,7 @@ class RoleModelTest extends TestCase
     public function testrole_has_permission_method(): void
     {
         $role = Role::factory()->create();
-        $role->permissions()->create(['name' => 'documents.create']);
+        $role->rolePermissions()->create(['name' => 'documents.create']);
 
         $this->assertTrue($role->hasPermission('documents.create'));
         $this->assertFalse($role->hasPermission('documents.delete'));

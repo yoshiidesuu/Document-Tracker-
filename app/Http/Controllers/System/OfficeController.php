@@ -40,13 +40,14 @@ class OfficeController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'code' => ['nullable', 'string', 'max:50', 'unique:offices', 'regex:/^[a-z0-9-]+$/'],
             'description' => ['nullable', 'string', 'max:1000'],
+            'department_id' => ['required', 'exists:departments,id'],
         ]);
 
         $data['is_active'] = true;
 
         $office = Office::create($data);
 
-        $this->userActivity->log('office_created', "Office created: {$office->name}", newData: $office->only(['name', 'code', 'description']));
+        $this->userActivity->log('office_created', "Office created: {$office->name}", newData: $office->only(['name', 'code', 'description', 'department_id']));
 
         return redirect()->route('system.offices.index')
             ->with('success', "Office '{$office->name}' created successfully.");
@@ -108,7 +109,7 @@ class OfficeController extends Controller
         $status = $office->is_active ? 'activated' : 'deactivated';
         $this->userActivity->log('office_status_toggled', "Office {$status}: {$office->name}", oldData: $old, newData: $new);
 
-        return redirect()->route('system.offices.view', $office->id)
+        return redirect()->route('system.offices.index')
             ->with('success', "Office '{$office->name}' {$status} successfully.");
     }
 }

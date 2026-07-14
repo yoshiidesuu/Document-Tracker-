@@ -6,7 +6,6 @@ use Database\Factories\DocumentFactory;
 use Endroid\QrCode\Builder\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class Document extends Model
@@ -21,6 +20,7 @@ class Document extends Model
     protected $fillable = [
         'title',
         'document_type',
+        'document_type_id',
         'creator_id',
         'processing_hours',
         'qr_value',
@@ -64,9 +64,9 @@ class Document extends Model
 
     public function pastHolders()
     {
-        return $this->hasMany(DocumentTrack::class)->whereNotNull('released_at')->orWhere(function ($q) {
-            $q->whereNull('released_at')->where('user_id', '!=', Auth::id());
-        })->orderByDesc('received_at');
+        return $this->hasMany(DocumentTrack::class)
+            ->whereNotNull('released_at')
+            ->orderByDesc('received_at');
     }
 
     public function getQrCodeUrl(): string

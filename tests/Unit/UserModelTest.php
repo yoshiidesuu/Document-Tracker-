@@ -46,8 +46,15 @@ class UserModelTest extends TestCase
 
     public function test_user_initials_with_single_name(): void
     {
-        $user = User::factory()->create([
-            'name' => 'Single',
+        $user = User::create([
+            'name' => 'Single User',
+            'email' => 'single@example.com',
+            'password' => bcrypt('password'),
+            'status' => 'active',
+            'locked' => false,
+            'banned' => false,
+            'firstname' => null,
+            'lastname' => null,
         ]);
 
         $this->assertEquals('SI', $user->initials);

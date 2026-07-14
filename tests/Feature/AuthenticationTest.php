@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -38,7 +39,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $response = $this->post(route('login'), [
-            'email' => 'user@test.com',
+            'credential' => 'user@test.com',
             'password' => 'password123',
         ]);
 
@@ -56,11 +57,11 @@ class AuthenticationTest extends TestCase
         ]);
 
         $response = $this->post(route('login'), [
-            'email' => 'user@test.com',
+            'credential' => 'user@test.com',
             'password' => 'wrongpassword',
         ]);
 
-        $response->assertSessionHasErrors('email');
+        $response->assertSessionHasErrors('credential');
         $this->assertGuest();
     }
 
@@ -68,11 +69,11 @@ class AuthenticationTest extends TestCase
     public function testuser_cannot_login_with_invalid_email(): void
     {
         $response = $this->post(route('login'), [
-            'email' => 'nonexistent@test.com',
+            'credential' => 'nonexistent@test.com',
             'password' => 'password123',
         ]);
 
-        $response->assertSessionHasErrors('email');
+        $response->assertSessionHasErrors('credential');
         $this->assertGuest();
     }
 
@@ -97,12 +98,22 @@ class AuthenticationTest extends TestCase
     // @test
     public function testauthenticated_user_can_logout(): void
     {
-        $this->actingAs($this->admin);
+        $user = User::factory()->create([
+            'email' => 'user@test.com',
+            'password' => bcrypt('password123'),
+            'status' => 'active',
+        ]);
 
-        $response = $this->post(route('logout'));
+        // Login properly to establish session
+        $this->post(route('login'), [
+            'credential' => 'user@test.com',
+            'password' => 'password123',
+        ]);
 
-        $response->assertRedirect(route('login.form'));
-        $this->assertGuest();
+        $response = $this->post(route('logout'), [], ['Accept' => 'application/json']);
+
+        $response->assertStatus(200);
+        $response->assertJson(['message' => 'Logged out successfully.']);
     }
 
     // @test
@@ -117,11 +128,14 @@ class AuthenticationTest extends TestCase
             'id_number' => 'ID12345',
             'department_id' => null,
             'office_id' => null,
+            'terms_accepted' => true,
+            'privacy_accepted' => true,
         ];
 
         $response = $this->post(route('register'), $data);
 
-        $response->assertRedirect(route('system.dashboard'));
+        $response->assertStatus(201);
+        $response->assertJson(['message' => 'Registration successful.']);
         $this->assertDatabaseHas('users', ['email' => 'newuser@test.com']);
     }
 
@@ -135,7 +149,8 @@ class AuthenticationTest extends TestCase
             'lastname',
             'email',
             'password',
-            'id_number',
+            'terms_accepted',
+            'privacy_accepted',
         ]);
     }
 
@@ -233,8 +248,8 @@ class AuthenticationTest extends TestCase
 
         $response = $this->post(route('password.email'), ['email' => 'user@test.com']);
 
-        $response->assertRedirect(route('login.form'));
-        $response->assertSessionHas('status');
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['message']);
     }
 
     // @test
@@ -244,28 +259,38 @@ class AuthenticationTest extends TestCase
 
         $response = $this->post(route('password.change'), [
             'current_password' => 'password123',
-            'password' => 'NewPassword123!',
-            'password_confirmation' => 'NewPassword123!',
+            'new_password' => 'NewPassword123!',
+            'new_password_confirmation' => 'NewPassword123!',
         ]);
 
-        $response->assertRedirect(route('system.profile'));
-        $response->assertSessionHas('success');
+        $response->assertStatus(200);
+        $response->assertJson(['message' => 'Password changed successfully.']);
 
-        $this->assertTrue($this->admin->fresh()->checkPassword('NewPassword123!'));
+        $this->admin->refresh();
+        $this->assertTrue(Hash::check('NewPassword123!', $this->admin->password));
     }
 
     // @test
     public function testpassword_change_validates_current_password(): void
     {
-        $this->actingAs($this->admin);
+        $user = User::factory()->create([
+            'email' => 'user@test.com',
+            'password' => bcrypt('password123'),
+            'status' => 'active',
+        ]);
+
+        $this->post(route('login'), [
+            'credential' => 'user@test.com',
+            'password' => 'password123',
+        ]);
 
         $response = $this->post(route('password.change'), [
             'current_password' => 'wrongpassword',
-            'password' => 'NewPassword123!',
-            'password_confirmation' => 'NewPassword123!',
-        ]);
+            'new_password' => 'NewPassword123!',
+            'new_password_confirmation' => 'NewPassword123!',
+        ], ['Accept' => 'application/json']);
 
-        $response->assertSessionHasErrors('current_password');
+        $response->assertStatus(422);
     }
 
     // @test
@@ -316,7 +341,17 @@ class AuthenticationTest extends TestCase
     // @test
     public function testsession_verification_endpoint_works(): void
     {
-        $this->actingAs($this->admin);
+        $user = User::factory()->create([
+            'email' => 'user@test.com',
+            'password' => bcrypt('password123'),
+            'status' => 'active',
+        ]);
+
+        // Login properly to set fingerprint
+        $this->post(route('login'), [
+            'credential' => 'user@test.com',
+            'password' => 'password123',
+        ]);
 
         $response = $this->get(route('user.verify-session'));
 

@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('document_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->enum('action', ['received', 'released', 'forwarded', 'returned'])->default('received');
             $table->timestamp('received_at')->nullable();
             $table->timestamp('released_at')->nullable();
             $table->timestamps();

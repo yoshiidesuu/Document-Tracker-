@@ -37,7 +37,7 @@ class DepartmentController extends Controller
         abort_unless(auth()->user()->hasPermission('departments.create'), 403);
 
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'unique:departments'],
             'code' => ['nullable', 'string', 'max:50', 'unique:departments', 'regex:/^[a-z0-9-]+$/'],
             'description' => ['nullable', 'string', 'max:1000'],
         ]);
@@ -71,7 +71,7 @@ class DepartmentController extends Controller
         abort_unless(auth()->user()->hasPermission('departments.edit'), 403);
 
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', Rule::unique('departments')->ignore($department->id)],
             'code' => ['nullable', 'string', 'max:50', Rule::unique('departments')->ignore($department->id), 'regex:/^[a-z0-9-]+$/'],
             'description' => ['nullable', 'string', 'max:1000'],
         ]);
@@ -108,7 +108,7 @@ class DepartmentController extends Controller
         $status = $department->is_active ? 'activated' : 'deactivated';
         $this->userActivity->log('department_status_toggled', "Department {$status}: {$department->name}", oldData: $old, newData: $new);
 
-        return redirect()->route('system.departments.view', $department->id)
+        return redirect()->route('system.departments.index')
             ->with('success', "Department '{$department->name}' {$status} successfully.");
     }
 }

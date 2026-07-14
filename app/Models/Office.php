@@ -29,4 +29,14 @@ class Office extends Model
             'is_active' => 'boolean',
         ];
     }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

@@ -28,4 +28,9 @@ class DocumentType extends Model
             'is_active' => 'boolean',
         ];
     }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class, 'document_type_id');
+    }
 }

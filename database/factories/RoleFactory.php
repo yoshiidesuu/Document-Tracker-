@@ -19,6 +19,7 @@ class RoleFactory extends Factory
             'slug' => Str::slug($name),
             'description' => fake()->sentence(),
             'is_system' => false,
+            'permissions' => [],
         ];
     }
 }

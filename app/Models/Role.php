@@ -32,13 +32,25 @@ class Role extends Model
         return $this->belongsToMany(User::class);
     }
 
-    public function permissions(): HasMany
+    public function rolePermissions(): HasMany
     {
         return $this->hasMany(Permission::class);
     }
 
+    public function permissions(): HasMany
+    {
+        return $this->rolePermissions();
+    }
+
     public function hasPermission(string $permission): bool
     {
-        return in_array($permission, $this->permissions ?? []);
+        // Check both JSON array and database permissions
+        $jsonPermissions = $this->permissions ?? [];
+        if (in_array($permission, $jsonPermissions)) {
+            return true;
+        }
+
+        // Also check database permissions
+        return $this->rolePermissions()->where('name', $permission)->exists();
     }
 }

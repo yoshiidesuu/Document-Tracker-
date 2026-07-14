@@ -20,10 +20,12 @@ class ArtaSetting extends Model
     protected $fillable = [
         'category',
         'title',
+        'description',
         'days',
         'hours',
         'minutes',
         'is_active',
+        'duration_label',
     ];
 
     protected function casts(): array
@@ -38,6 +40,12 @@ class ArtaSetting extends Model
 
     public function getDurationLabelAttribute(): string
     {
+        // Use database column if explicitly set
+        if (! is_null($this->attributes['duration_label'] ?? null)) {
+            return $this->attributes['duration_label'];
+        }
+
+        // Otherwise compute from days/hours/minutes
         $parts = [];
         if ($this->days) {
             $parts[] = $this->days.' day'.($this->days > 1 ? 's' : '');
@@ -50,5 +58,10 @@ class ArtaSetting extends Model
         }
 
         return $parts ? implode(', ', $parts) : '—';
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class, 'arta_setting_id');
     }
 }

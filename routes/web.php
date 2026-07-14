@@ -255,4 +255,4 @@ Route::get('user/verify-session', function (Request $request) {
     }
 
     return response()->json(['valid' => $valid]);
-})->middleware('auth');
+})->name('user.verify-session');

@@ -35,10 +35,15 @@ class ForgotPasswordController extends Controller
 
         $token = Str::random(64);
 
-        DB::table('password_reset_tokens')->updateOrCreate(
-            ['email' => $request->email],
-            ['email' => $request->email, 'token' => hash('sha256', $token), 'created_at' => now()]
-        );
+        DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->delete();
+
+        DB::table('password_reset_tokens')->insert([
+            'email' => $request->email,
+            'token' => hash('sha256', $token),
+            'created_at' => now(),
+        ]);
 
         $mailConfig = [
             'host' => config('mail.mailers.smtp.host'),

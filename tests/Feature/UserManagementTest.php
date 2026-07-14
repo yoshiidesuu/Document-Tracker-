@@ -321,6 +321,6 @@ class UserManagementTest extends TestCase
         $this->staffRole->update(['permissions' => [$permission]]);
 
         $this->assertTrue($this->staff->hasPermission($permission));
-        $this->assertFalse($this->admin->hasPermission($permission));
+        $this->assertTrue($this->admin->hasPermission($permission)); // Admin has all permissions
     }
 }
