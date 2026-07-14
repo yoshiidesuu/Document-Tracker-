@@ -59,6 +59,9 @@ jobs:
       - name: Build frontend assets
         run: npm run build
 
+      - name: Verify Vite manifest
+        run: ls -la public/build/ && cat public/build/manifest.json
+
       - name: Copy .env.testing
         run: cp .env.testing .env
 
