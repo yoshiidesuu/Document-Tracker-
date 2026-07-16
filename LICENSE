@@ -1,21 +1,46 @@
-MIT License
+# Proprietary Software License Agreement
 
-Copyright (c) 2026 Jomari Rebadulla
+**Copyright © 2026 Jomari Rebadulla. All Rights Reserved.**
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This software, including but not limited to its source code, algorithms, database structure, user interface, documentation, multimedia assets, architectural designs, and all associated materials (collectively referred to as the **"Software"**), is the exclusive intellectual property of **Jomari Rebadulla**.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+## Restrictions
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+This Software is **private and confidential**. It is **not open source** and **not intended for public distribution**.
+
+No person, organization, institution, or entity may, without prior written permission from the copyright owner:
+
+* Access, use, install, execute, or operate the Software.
+* Copy, reproduce, duplicate, or redistribute any portion of the Software.
+* Modify, reverse engineer, decompile, disassemble, or create derivative works.
+* Sell, sublicense, lease, rent, or commercially exploit the Software.
+* Publish, disclose, upload, or distribute the source code, documentation, or any part of the Software.
+* Use any portion of the Software for academic, commercial, governmental, or personal purposes.
+
+## Intellectual Property
+
+All intellectual property rights, copyrights, trade secrets, and any applicable patent rights relating to this Software remain solely owned by **Jomari Rebadulla**.
+
+Nothing contained within this license grants any ownership, license, or right to use the Software except through an explicit written agreement signed by the copyright owner.
+
+## Unauthorized Use
+
+Any unauthorized access, copying, modification, distribution, disclosure, reproduction, or commercial use of this Software constitutes a violation of applicable intellectual property and copyright laws and may result in civil and/or criminal legal action to the fullest extent permitted by law.
+
+The copyright owner reserves the right to pursue damages, injunctive relief, attorney's fees, and any other remedies available under applicable law.
+
+## Confidentiality
+
+This Software and its accompanying documentation contain confidential and proprietary information. Any individual granted access to the Software is required to maintain strict confidentiality unless expressly authorized in writing by the copyright owner.
+
+## Disclaimer
+
+The Software is provided solely to authorized users under specific written permission. Unauthorized users acquire no rights whatsoever regarding the Software.
+
+---
+
+**Owner:** Jomari Rebadulla
+
+**Copyright:** © 2026 Jomari Rebadulla. All Rights Reserved.
+
+**License Type:** Proprietary / Private Software License
